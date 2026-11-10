@@ -33,9 +33,13 @@ See [scoring-reporting.md](scoring-reporting.md).
 
 See [web-dashboard.md](web-dashboard.md).
 
-## Deferred (post-M8)
+7. **M9** Cursor MCP (`services/mcp`) sharing backend engines
 
-MCP (M9), validation/learning (M10), live provider clients.
+See [mcp.md](mcp.md).
+
+## Deferred (post-M9)
+
+Validation/learning (M10), live provider clients.
 
 ## Design rules
 
