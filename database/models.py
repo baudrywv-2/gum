@@ -308,3 +308,61 @@ class GapFindingRow(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class FormatRecommendationRow(Base):
+    """Persisted solution-format recommendation."""
+
+    __tablename__ = "format_recommendations"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    collection_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    query: Mapped[str] = mapped_column(Text, nullable=False)
+    geography: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    language: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    primary_format: Mapped[str] = mapped_column(String(64), nullable=False)
+    alternatives: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    complementary: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    rejected: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    claims: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    missing_info: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class FormatEvaluationRow(Base):
+    """Per-format evaluation with select/reject reasons."""
+
+    __tablename__ = "format_evaluations"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    recommendation_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    format: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    decision: Mapped[str] = mapped_column(String(32), nullable=False)
+    fit_score: Mapped[float] = mapped_column(Float, nullable=False)
+    complexity: Mapped[str] = mapped_column(String(32), nullable=False)
+    maintenance: Mapped[str] = mapped_column(String(32), nullable=False)
+    monetization_hypotheses: Mapped[list[Any]] = mapped_column(
+        JSONB, nullable=False, default=list
+    )
+    cheapest_validation: Mapped[str] = mapped_column(Text, nullable=False)
+    reasons_selected: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    reasons_rejected: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    evidence_ids: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    missing_info: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    attributes: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )

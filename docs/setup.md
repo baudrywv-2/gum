@@ -154,8 +154,19 @@ curl -s http://127.0.0.1:8000/gaps
 
 Details: [gap-analysis.md](gap-analysis.md).
 
+## 13. Format recommendation smoke (Milestone 6)
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/formats/recommend \
+  -H 'content-type: application/json' \
+  -d '{"query":"freelancer invoicing calculator tool","geography":"US","language":"en"}'
+curl -s http://127.0.0.1:8000/formats
+```
+
+Details: [format-recommendation.md](format-recommendation.md).
+
 ## Milestone boundaries
 
-**M1–M5 in scope:** monorepo, providers (mock), evidence, opportunity discovery, competitor/gap analysis (evidence-backed; no weak labels without evidence), tests, docs.
+**M1–M6 in scope:** monorepo, providers (mock), evidence, discovery, gap analysis, format recommendation (hypotheses with labeled select/reject reasons), tests, docs.
 
-**Out of scope until approval (M6+):** format recommendation, scoring/reporting, live paid providers, MCP, dashboard features beyond the shell.
+**Out of scope until approval (M7+):** full scoring/reporting, live paid providers, MCP, dashboard features beyond the shell.

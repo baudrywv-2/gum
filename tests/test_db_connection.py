@@ -30,6 +30,9 @@ def test_m1_through_m4_tables_exist() -> None:
     assert "gap_reports" in tables
     assert "competitors" in tables
     assert "gap_findings" in tables
+    assert "format_recommendations" in tables
+    assert "format_evaluations" in tables
+
 
 
 
