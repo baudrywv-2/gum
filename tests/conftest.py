@@ -53,6 +53,7 @@ def _truncate_app_tables() -> None:
             )
         }
         targets = [
+            "opportunity_reports",
             "format_evaluations",
             "format_recommendations",
             "gap_findings",

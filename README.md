@@ -2,17 +2,13 @@
 
 Discover real problems and unmet demand, collect evidence, then recommend what to build.
 
-**Current:** Milestone 6 format recommendation (primary + alternatives with evidence-backed select/reject reasons; complexity, maintenance, monetization, cheapest validation; prefer simple when evidence supports it).
+**Current:** Milestone 7 scoring & reporting (independent transparent scores + structured opportunity reports + filter/rank).
 
 ## Quick start
 
 See **[docs/setup.md](docs/setup.md)**.
 
-- [docs/providers.md](docs/providers.md)
-- [docs/evidence.md](docs/evidence.md)
-- [docs/opportunity-discovery.md](docs/opportunity-discovery.md)
-- [docs/gap-analysis.md](docs/gap-analysis.md)
-- [docs/format-recommendation.md](docs/format-recommendation.md)
+Docs: providers · evidence · opportunity-discovery · gap-analysis · format-recommendation · [scoring-reporting](docs/scoring-reporting.md)
 
 ```bash
 docker compose -f infrastructure/docker/docker-compose.yml up -d
@@ -24,14 +20,12 @@ alembic -c database/alembic.ini upgrade head
 uvicorn app.main:app --app-dir services/api --host 127.0.0.1 --port 8000 --reload
 ```
 
-Format smoke:
-
 ```bash
-curl -s -X POST http://127.0.0.1:8000/formats/recommend \
+curl -s -X POST http://127.0.0.1:8000/reports/generate \
   -H 'content-type: application/json' \
   -d '{"query":"freelancer invoicing calculator tool","geography":"US","language":"en"}'
 ```
 
 ## Status
 
-Milestone 6 complete on this branch. Stop for approval before Milestone 7 (scoring and reporting).
+Milestone 7 complete on this branch (continuous M7–M10 run after blanket approval).

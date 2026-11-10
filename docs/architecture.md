@@ -10,6 +10,7 @@ evidence/                Evidence collection (M3)
 opportunity_engine/      Opportunity discovery (M4)
 gap_engine/              Competitor & gap analysis (M5)
 format_engine/           Format recommendation (M6)
+scoring_engine/          Scoring & reports (M7)
 packages/contracts       Shared Pydantic contracts
 database/                SQLAlchemy + Alembic
 tests/                   pytest
@@ -20,16 +21,17 @@ docs/
 ## Milestone flow
 
 1. **M1–M2** Foundation + mocked providers  
-2. **M3** Evidence collection (search/discussion/pain points/provenance/dedupe)  
-3. **M4** Opportunity discovery (clusters/themes/audiences/correlation)  
-4. **M5** Competitor/gap analysis (no weak labels without evidence)  
-5. **M6** Format recommendation (primary/alternatives/complementary/rejected with reasons)
+2. **M3** Evidence collection  
+3. **M4** Opportunity discovery  
+4. **M5** Competitor/gap analysis  
+5. **M6** Format recommendation  
+6. **M7** Scoring & reporting (transparent dimensions + structured reports)
 
-See [format-recommendation.md](format-recommendation.md).
+See [scoring-reporting.md](scoring-reporting.md).
 
-## Deferred (post-M6)
+## Deferred (post-M7)
 
-Scoring/reporting (M7), web dashboard (M8), MCP (M9), validation/learning (M10), live provider clients.
+Web dashboard (M8), MCP (M9), validation/learning (M10), live provider clients.
 
 ## Design rules
 
