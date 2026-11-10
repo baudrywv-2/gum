@@ -176,8 +176,17 @@ curl -s 'http://127.0.0.1:8000/reports?rank_by=overall_priority'
 
 Details: [scoring-reporting.md](scoring-reporting.md).
 
+## 15. Web dashboard (Milestone 8)
+
+```bash
+cd apps/web && npm run dev
+# http://127.0.0.1:3000 — set NEXT_PUBLIC_API_BASE_URL if needed
+```
+
+Details: [web-dashboard.md](web-dashboard.md).
+
 ## Milestone boundaries
 
-**M1–M7 in scope:** monorepo through scoring/reporting with labeled claims and no fabricated demand.
+**M1–M8 in scope:** through discovery-first web dashboard.
 
-**Remaining in continuous run:** web dashboard (M8), MCP (M9), validation/learning (M10). Live paid providers stay off unless credentials exist.
+**Remaining in continuous run:** MCP (M9), validation/learning (M10). Live paid providers stay off unless credentials exist.

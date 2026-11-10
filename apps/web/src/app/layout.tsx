@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AppShell } from "@/components/AppShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GUM — Opportunity Intelligence",
   description:
-    "GUM Milestone 1 foundation: discover problems, collect evidence, recommend what to build.",
+    "Discover problems first, evaluate evidence, then recommend what to build.",
 };
 
 export default function RootLayout({
@@ -26,9 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
