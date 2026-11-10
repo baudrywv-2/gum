@@ -52,7 +52,7 @@ class OpportunityDiscoveryEngine:
         self, request: DiscoverOpportunitiesRequest
     ) -> DiscoverOpportunitiesResult:
         limitations = [
-            "Discovery uses mock/stub providers unless live clients are explicitly enabled.",
+            "Prefer SerpAPI/YouTube MEASURED_FACT search/video evidence over MOCK discussion.",
             "No demand volumes, TAM, or conversion rates were fabricated.",
             "Interpretive outputs are claim-tagged; treat HYPOTHESIS/AI_INTERPRETATION as non-factual.",
         ]
@@ -111,20 +111,64 @@ class OpportunityDiscoveryEngine:
 
         themes = detect_emerging_themes(evidence)
         correlations = correlate_clusters(clusters, evidence)
+
+        live_evidence = [
+            e
+            for e in evidence
+            if e.provenance.provider_mode.value == "live"
+            and e.provenance.claim_tag is ClaimTag.MEASURED_FACT
+        ]
+        if live_evidence:
+            limitations.append(
+                f"Live MEASURED_FACT evidence items in collection: {len(live_evidence)} "
+                "(SerpAPI/YouTube/etc.) — weight these above MOCK discussion."
+            )
+
+        live_backed_pains = [
+            p
+            for p in pain_points
+            if p.source_providers
+            and not all(prov.value == "mock" for prov in p.source_providers)
+        ]
+        mock_only_pains = [
+            p
+            for p in pain_points
+            if p.source_providers
+            and all(prov.value == "mock" for prov in p.source_providers)
+        ]
+        if mock_only_pains:
+            limitations.append(
+                f"Skipped {len(mock_only_pains)} MOCK-only pain point(s) when building "
+                "opportunity cards (discussion synthetic / not live user voice)."
+            )
+        if not any(e.kind.value == "discussion" and e.provenance.provider_mode.value == "live" for e in evidence):
+            limitations.append(
+                "Live discussion unavailable; recurring-problem cards from discussion "
+                "pain are omitted or labeled hypothesis only."
+            )
+
         audiences = hypothesize_underserved_audiences(
             query=request.query,
             geography=request.geography,
             language=request.language,
             evidence=evidence,
-            pain_points=pain_points,
+            pain_points=live_backed_pains,
         )
 
-        # Build typed buckets then round-robin so the response stays diverse and useful.
+        # Prefer live MEASURED_FACT themes/correlations before weaker pain/audience cards.
+        themes_sorted = sorted(
+            themes,
+            key=lambda t: (
+                -sum(1 for p in t.providers if p.value in {"serp", "youtube", "google_trends"}),
+                -t.provider_count,
+                -t.evidence_count,
+            ),
+        )
         buckets = [
-            self._from_pain_points(pain_points, request),
-            self._from_themes(themes, request),
-            self._from_audiences(audiences, request),
+            self._from_themes(themes_sorted, request),
             self._from_correlations(correlations, request),
+            self._from_pain_points(live_backed_pains, request),
+            self._from_audiences(audiences, request),
         ]
         opportunities = self._interleave(buckets, request.max_opportunities)
 
@@ -159,7 +203,7 @@ class OpportunityDiscoveryEngine:
             query=request.query,
             clusters=saved_clusters,
             recurring_problems=recurring,
-            emerging_themes=themes,
+            emerging_themes=themes_sorted,
             underserved_audiences=audiences,
             correlations=correlations,
             opportunities=saved_opportunities,
