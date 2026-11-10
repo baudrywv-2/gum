@@ -60,6 +60,15 @@ from packages.contracts.providers import (
     ProviderStatus,
     ProviderUsageRecord,
 )
+from packages.contracts.validation import (
+    ExperimentStatus,
+    OutcomeSummary,
+    ProposeExperimentsRequest,
+    ProposeExperimentsResult,
+    RecordOutcomeRequest,
+    ValidationDecision,
+    ValidationExperiment,
+)
 
 __all__ = [
     "AnalyzeGapsRequest",
@@ -77,6 +86,7 @@ __all__ = [
     "EvidenceCluster",
     "EvidenceKind",
     "EvidenceRecord",
+    "ExperimentStatus",
     "FormatDecision",
     "FormatEvaluation",
     "FormatRecommendation",
@@ -92,7 +102,10 @@ __all__ = [
     "OpportunityReport",
     "OpportunityScores",
     "OpportunityType",
+    "OutcomeSummary",
     "PainPoint",
+    "ProposeExperimentsRequest",
+    "ProposeExperimentsResult",
     "Provenance",
     "ProviderCapability",
     "ProviderMode",
@@ -105,9 +118,12 @@ __all__ = [
     "RankReportsRequest",
     "RecommendFormatsRequest",
     "RecommendFormatsResult",
+    "RecordOutcomeRequest",
     "ReliabilityLevel",
     "ScoreDimension",
     "ScoreExplanation",
     "SolutionFormat",
     "UnderservedAudienceHypothesis",
+    "ValidationDecision",
+    "ValidationExperiment",
 ]

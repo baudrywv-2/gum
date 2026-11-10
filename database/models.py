@@ -445,3 +445,41 @@ class SavedOpportunityRow(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class ValidationExperimentRow(Base):
+    """Validation experiment with projected vs measured fields (Milestone 10)."""
+
+    __tablename__ = "validation_experiments"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    report_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True, index=True
+    )
+    collection_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True, index=True
+    )
+    query: Mapped[str] = mapped_column(Text, nullable=False)
+    hypothesis: Mapped[str] = mapped_column(Text, nullable=False)
+    experiment: Mapped[str] = mapped_column(Text, nullable=False)
+    projected_cost_usd: Mapped[float | None] = mapped_column(Float, nullable=True)
+    projected_time_days: Mapped[float | None] = mapped_column(Float, nullable=True)
+    success_criteria: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="proposed")
+    measured_cost_usd: Mapped[float | None] = mapped_column(Float, nullable=True)
+    measured_time_days: Mapped[float | None] = mapped_column(Float, nullable=True)
+    results: Mapped[str | None] = mapped_column(Text, nullable=True)
+    decision: Mapped[str] = mapped_column(String(32), nullable=False, default="pending")
+    decision_rationale: Mapped[str | None] = mapped_column(Text, nullable=True)
+    claims: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    missing_info: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    attributes: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )

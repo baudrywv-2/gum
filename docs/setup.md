@@ -194,8 +194,19 @@ python services/mcp/server.py   # stdio for Cursor
 
 Details: [mcp.md](mcp.md).
 
+## 17. Validation smoke (Milestone 10)
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/validation/propose \
+  -H 'content-type: application/json' \
+  -d '{"query":"freelancer invoicing calculator tool","geography":"US","language":"en"}'
+curl -s http://127.0.0.1:8000/validation/outcomes
+```
+
+Details: [validation.md](validation.md).
+
 ## Milestone boundaries
 
-**M1–M9 in scope:** through Cursor MCP sharing backend engines.
+**M1–M10 in scope:** foundation through validation/learning.
 
-**Remaining in continuous run:** validation/learning (M10). Live paid providers stay off unless credentials exist.
+**Still deferred:** live paid providers (unless credentials exist), auth/workspaces, background workers, Playwright E2E.

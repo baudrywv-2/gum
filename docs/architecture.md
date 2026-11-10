@@ -37,9 +37,13 @@ See [web-dashboard.md](web-dashboard.md).
 
 See [mcp.md](mcp.md).
 
-## Deferred (post-M9)
+8. **M10** Validation & learning (`validation_engine`)
 
-Validation/learning (M10), live provider clients.
+See [validation.md](validation.md).
+
+## Deferred (post-M10)
+
+Live paid provider clients (when credentials exist), auth/workspaces, Celery/Redis job workers, Playwright E2E.
 
 ## Design rules
 
