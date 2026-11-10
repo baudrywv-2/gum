@@ -78,14 +78,35 @@ class EvidenceCollector:
                 limitations.extend(response.limitations)
 
         discussion_records: list[EvidenceRecord] = []
+        discussion_unavailable = False
         if request.include_discussions:
             for provider_name in request.providers_discussion:
                 response = self._safe_search(provider_name, request)
                 if response is None:
+                    discussion_unavailable = True
                     limitations.append(
                         f"Discussion provider unavailable: {provider_name.value}"
                     )
                     continue
+                limitations.extend(response.limitations)
+                if response.mode is ProviderMode.UNAVAILABLE:
+                    discussion_unavailable = True
+                    limitations.append(
+                        f"Discussion provider {provider_name.value} returned "
+                        f"unavailable ({(response.raw or {}).get('error') or 'error'}); "
+                        "no synthetic discussion substituted."
+                    )
+                    continue
+                if (
+                    response.mode is ProviderMode.MOCK
+                    and provider_name is not ProviderName.MOCK
+                ):
+                    # Force-mock / stub path for a live-named provider — keep items but
+                    # mark that discussion is not live.
+                    limitations.append(
+                        f"Discussion provider {provider_name.value} ran in MOCK mode; "
+                        "treat discussion claims as UNVERIFIED / HYPOTHESIS only."
+                    )
                 for item in response.items[: request.limit_per_provider]:
                     record = self._item_to_record(
                         kind=EvidenceKind.DISCUSSION,
@@ -101,17 +122,42 @@ class EvidenceCollector:
                         created += 1
                     else:
                         deduped += 1
-                limitations.extend(response.limitations)
 
         pain_created = 0
         pain_updated = 0
         pain_points = []
         if request.extract_pain_points:
-            # Include deduped discussion rows linked into this collection.
-            source = discussion_records or stored
-            extracted = extract_pain_points(
-                source, collection_id=collection.id
-            )
+            live_discussion = [
+                r
+                for r in discussion_records
+                if r.provenance.provider_mode is not ProviderMode.MOCK
+            ]
+            mock_discussion = [
+                r
+                for r in discussion_records
+                if r.provenance.provider_mode is ProviderMode.MOCK
+            ]
+            if live_discussion:
+                source = live_discussion
+            elif mock_discussion:
+                # Explicit MOCK discussion only — still extract, but callers demote cards.
+                source = mock_discussion
+                limitations.append(
+                    "Pain points derived from MOCK discussion only — not live user voice."
+                )
+            elif discussion_unavailable or request.include_discussions:
+                # X (or other discussion) down with nothing stored: do not invent pains
+                # from mock, and do not scrape SERP titles into "recurring problems".
+                source = []
+                limitations.append(
+                    "Live discussion unavailable; pain-point extraction skipped "
+                    "(no synthetic discussion). Opportunity cards should prefer "
+                    "SerpAPI/YouTube MEASURED_FACT themes instead."
+                )
+            else:
+                source = []
+
+            extracted = extract_pain_points(source, collection_id=collection.id)
             for pain in extracted:
                 saved, was_created = self.store.upsert_pain_point(pain)
                 pain_points.append(saved)

@@ -77,13 +77,14 @@ class CollectEvidenceRequest(BaseModel):
     extract_pain_points: bool = True
     providers_search: list[ProviderName] = Field(
         default_factory=lambda: [
-            ProviderName.GOOGLE_ADS,
             ProviderName.GOOGLE_TRENDS,
             ProviderName.SERP,
+            ProviderName.YOUTUBE,
         ]
     )
     providers_discussion: list[ProviderName] = Field(
-        default_factory=lambda: [ProviderName.X_API, ProviderName.MOCK]
+        # X only by default — do not inject MOCK discussion when X is down.
+        default_factory=lambda: [ProviderName.X_API]
     )
     limit_per_provider: int = Field(default=5, ge=1, le=50)
 
