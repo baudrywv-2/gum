@@ -57,3 +57,12 @@ def test_health_status_contract() -> None:
         timestamp=datetime.now(timezone.utc),
     )
     assert status.service == "gum-api"
+
+
+def test_evidence_contracts_export() -> None:
+    from packages.contracts import EvidenceKind, Provenance, ReliabilityLevel
+
+    assert EvidenceKind.SEARCH.value == "search"
+    assert ReliabilityLevel.LOW.value == "low"
+    assert Provenance.model_fields["claim_tag"]
+
