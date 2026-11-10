@@ -17,6 +17,7 @@ class ProviderName(str, Enum):
     GOOGLE_TRENDS = "google_trends"
     SERP = "serp"
     X_API = "x_api"
+    YOUTUBE = "youtube"
     REDDIT = "reddit"
 
 
@@ -33,6 +34,7 @@ class ProviderCapability(str, Enum):
     TREND_INTEREST = "trend_interest"
     SERP_SNAPSHOT = "serp_snapshot"
     SOCIAL_SEARCH = "social_search"
+    VIDEO_SEARCH = "video_search"
     GENERIC_SEARCH = "generic_search"
 
 

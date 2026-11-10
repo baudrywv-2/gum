@@ -60,6 +60,13 @@ class ProviderSettings(BaseSettings):
         default="https://api.x.com/2", alias="X_API_BASE_URL"
     )
 
+    # YouTube Data API v3
+    youtube_api_key: str | None = Field(default=None, alias="YOUTUBE_API_KEY")
+    youtube_api_base_url: str = Field(
+        default="https://www.googleapis.com/youtube/v3",
+        alias="YOUTUBE_API_BASE_URL",
+    )
+
     def google_ads_configured(self) -> bool:
         return all(
             [
@@ -76,6 +83,9 @@ class ProviderSettings(BaseSettings):
 
     def x_api_configured(self) -> bool:
         return bool(self.x_api_bearer_token)
+
+    def youtube_configured(self) -> bool:
+        return bool(self.youtube_api_key)
 
     def should_mock(self, configured: bool) -> bool:
         if self.force_mock_providers:

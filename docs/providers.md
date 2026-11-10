@@ -1,6 +1,6 @@
 # Provider infrastructure (Milestone 2+)
 
-Modular, replaceable data-source adapters. **Default is MOCK** via `GUM_FORCE_MOCK_PROVIDERS=true`. Live paths exist for **X**, **SerpAPI Google organic**, and **SerpAPI Google Trends** when credentials are set and force-mock is disabled.
+Modular, replaceable data-source adapters. **Default is MOCK** via `GUM_FORCE_MOCK_PROVIDERS=true`. Live paths exist for **X**, **SerpAPI** (Google organic + Trends), and **YouTube Data API v3** when credentials are set and force-mock is disabled.
 
 ## Package layout
 
@@ -17,6 +17,7 @@ providers/
   serp.py            Google organic via SerpAPI (live when configured; else mock)
   serpapi_http.py    Shared SerpAPI HTTP / error helpers
   x_api.py           X recent-search (live when configured; else mock)
+  youtube.py         YouTube Data API v3 search (live when configured; else mock)
 packages/contracts/providers.py   Shared request/response/status models
 ```
 
@@ -48,6 +49,14 @@ Live posts are tagged `MEASURED_FACT` as **observed X posts**, with limitations 
 
 Live organic hits and Trends series are tagged `MEASURED_FACT` as **observed SerpAPI payloads**, with limitations that SERP rankings / relative Trends indexes are **not** demand volume. Auth, quota, and HTTP errors return `mode=unavailable` with empty items.
 
+### YouTube Data API v3 live path
+
+1. Set `YOUTUBE_API_KEY` in gitignored `.env`.
+2. Set `GUM_FORCE_MOCK_PROVIDERS=false`.
+3. `POST /providers/youtube/search` → `search.list` (type=video) plus a cheap `videos.list` for public statistics (views/channel).
+
+Live videos are tagged `MEASURED_FACT` as **observed YouTube results**. View/like/comment counts are public statistics — **not** purchase-intent proof. Auth (`401`/`403`), quota (`403` quotaExceeded / dailyLimitExceeded), and rate-limit (`429`) errors return `mode=unavailable` with empty items.
+
 ## API
 
 ```bash
@@ -72,7 +81,7 @@ Migration `20261110_0002` adds:
 
 ## Credential placeholders
 
-See `.env.example`. Google Ads remains a stub. **X** and **SerpAPI** (SERP + Trends) can run live when configured and force-mock is off.
+See `.env.example`. Google Ads remains a stub. **X**, **SerpAPI** (SERP + Trends), and **YouTube** can run live when configured and force-mock is off.
 
 ## Out of scope
 
