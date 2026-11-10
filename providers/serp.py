@@ -47,14 +47,15 @@ class SerpProvider(Provider):
         if self._should_mock():
             mode = ProviderMode.MOCK
             notes = (
-                "Mocked until SERPAPI_API_KEY is set and GUM_FORCE_MOCK_PROVIDERS=false. "
-                "SERP snapshots are discovery signals only — not demand proof."
+                "SerpAPI backend (SERP_PROVIDER=serpapi). Mocked until SERPAPI_API_KEY "
+                "is set and GUM_FORCE_MOCK_PROVIDERS=false. Set SERP_PROVIDER=dataforseo "
+                "to use DataForSEO instead. SERP snapshots are not demand proof."
             )
         else:
             mode = ProviderMode.LIVE
             notes = (
-                "Live Google organic SERP via SerpAPI. Rankings are a point-in-time "
-                "snapshot — not purchase-intent or market-size proof."
+                "Live Google organic SERP via SerpAPI (primary backend). Rankings are a "
+                "point-in-time snapshot — not purchase-intent or market-size proof."
             )
         return ProviderStatus(
             name=self.name,

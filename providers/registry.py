@@ -13,12 +13,20 @@ from packages.contracts.providers import (
 from providers.base import Provider
 from providers.cache import ProviderCache
 from providers.config import ProviderSettings, get_provider_settings
+from providers.dataforseo_serp import DataForSeoSerpProvider
 from providers.google_ads import GoogleAdsProvider
 from providers.google_trends import GoogleTrendsProvider
 from providers.mock import MockProvider
 from providers.serp import SerpProvider
 from providers.usage import UsageTracker
 from providers.x_api import XApiProvider
+
+
+def build_serp_provider(settings: ProviderSettings) -> Provider:
+    """SerpAPI remains primary default; DataForSEO when SERP_PROVIDER=dataforseo."""
+    if settings.resolved_serp_provider() == "dataforseo":
+        return DataForSeoSerpProvider(settings)
+    return SerpProvider(settings)
 
 
 class ProviderRegistry:
@@ -37,7 +45,7 @@ class ProviderRegistry:
             ProviderName.MOCK: MockProvider(),
             ProviderName.GOOGLE_ADS: GoogleAdsProvider(self.settings),
             ProviderName.GOOGLE_TRENDS: GoogleTrendsProvider(self.settings),
-            ProviderName.SERP: SerpProvider(self.settings),
+            ProviderName.SERP: build_serp_provider(self.settings),
             ProviderName.X_API: XApiProvider(self.settings),
         }
 
