@@ -29,7 +29,20 @@ class Settings(BaseSettings):
     )
     check_db_on_startup: bool = Field(default=True, alias="CHECK_DB_ON_STARTUP")
 
+    # Provider infrastructure (Milestone 2) — mirrored for discoverability.
+    force_mock_providers: bool = Field(default=True, alias="GUM_FORCE_MOCK_PROVIDERS")
+    provider_cache_ttl_seconds: int = Field(
+        default=300, alias="GUM_PROVIDER_CACHE_TTL_SECONDS"
+    )
+    provider_cache_enabled: bool = Field(
+        default=True, alias="GUM_PROVIDER_CACHE_ENABLED"
+    )
+
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+def reset_settings() -> None:
+    get_settings.cache_clear()

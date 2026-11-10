@@ -2,11 +2,11 @@
 
 Discover real problems and unmet demand, collect evidence, then recommend what to build.
 
-**Milestone 1 (this branch):** monorepo foundation only — Next.js web shell, FastAPI health API, PostgreSQL + Alembic, shared contracts, mock provider stub, tests, and setup docs.
+**Current:** Milestone 2 provider infrastructure (interfaces, mocks, config, caching, usage tracking; Google/SERP/X adapters stubbed/mocked).
 
 ## Quick start
 
-See **[docs/setup.md](docs/setup.md)** for exact commands.
+See **[docs/setup.md](docs/setup.md)** for exact commands. Provider details: **[docs/providers.md](docs/providers.md)**.
 
 ```bash
 # Postgres (Docker)
@@ -24,6 +24,14 @@ uvicorn app.main:app --app-dir services/api --host 127.0.0.1 --port 8000 --reloa
 cd apps/web && npm install && npm run dev
 ```
 
+Provider smoke:
+
+```bash
+curl -s http://127.0.0.1:8000/providers
+curl -s -X POST http://127.0.0.1:8000/providers/serp/search \
+  -H 'content-type: application/json' -d '{"query":"underserved niches"}'
+```
+
 ## Status
 
-Milestone 1 foundation. Stop for approval before Milestone 2 (provider infrastructure).
+Milestone 2 complete on this branch. Stop for approval before Milestone 3 (evidence collection).

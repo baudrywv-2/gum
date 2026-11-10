@@ -27,7 +27,7 @@ def health(db: Session = Depends(get_db)) -> HealthResponse:
     return HealthResponse(
         status=status,
         service="gum-api",
-        version="0.1.0",
+        version="0.2.0",
         database="connected" if db_ok else "unreachable",
         timestamp=datetime.now(timezone.utc),
     )
