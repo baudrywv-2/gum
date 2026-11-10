@@ -32,7 +32,7 @@ class XApiProvider(Provider):
             capabilities=self.capabilities,
             notes=(
                 "Stubbed/mocked. X posts are discovery signals only — never proof of "
-                "market size. Milestone 2 does not call the live X API."
+                "market size. No live X API calls while mocked."
             ),
         )
 
@@ -53,10 +53,10 @@ class XApiProvider(Provider):
                 },
             ),
             ProviderResultItem(
-                title=f"[MOCK x_api] Can't find help for {request.query}",
+                title=f"[MOCK x_api] InvoiceBot issue with {request.query}",
                 snippet=(
-                    f"Problem with existing tools for {request.query}: too expensive "
-                    "and they fail to cover the basics."
+                    f"Problem with InvoiceBot for {request.query}: too expensive "
+                    "and it fails to cover basic exports. Missing a simple CSV feature."
                 ),
                 url="https://x.com/example/status/1",
                 claim_tag=ClaimTag.UNVERIFIED_CLAIM,
@@ -64,6 +64,7 @@ class XApiProvider(Provider):
                     "author": "@mock_user_2",
                     "engagement": {"likes": 0, "reposts": 0},
                     "mocked": True,
+                    "mentioned_competitor": "InvoiceBot",
                 },
             ),
         ]
@@ -73,7 +74,7 @@ class XApiProvider(Provider):
             summary=f"Mocked X recent-search for '{request.query}'",
             items=items[: request.limit],
             limitations=[
-                "X API adapter is a stub in Milestone 2.",
+                "X API adapter is a stub — posts are synthetic placeholders.",
                 "No live X API request was made.",
                 "Social signals are not purchase-intent proof.",
             ],

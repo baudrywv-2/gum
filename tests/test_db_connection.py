@@ -27,6 +27,10 @@ def test_m1_through_m4_tables_exist() -> None:
     assert "evidence_clusters" in tables
     assert "opportunities" in tables
     assert "evidence_collection_members" in tables
+    assert "gap_reports" in tables
+    assert "competitors" in tables
+    assert "gap_findings" in tables
+
 
 
 

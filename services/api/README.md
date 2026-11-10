@@ -1,6 +1,6 @@
 # GUM API (`services/api`)
 
-FastAPI service for GUM (Milestones 1–4).
+FastAPI service for GUM (Milestones 1–5).
 
 ## Run
 
@@ -15,7 +15,8 @@ uvicorn app.main:app --app-dir services/api --host 127.0.0.1 --port 8000 --reloa
 ## Endpoints
 
 - `GET /health`
-- `GET /providers`, `POST /providers/{name}/search`, `GET /providers/usage`
-- `POST /evidence/collect`, `GET /evidence`, `GET /evidence/pain-points`
-- `POST /opportunities/discover`, `GET /opportunities`, `GET /opportunities/runs/{id}`
+- Providers: `GET /providers`, `POST /providers/{name}/search`, `GET /providers/usage`
+- Evidence: `POST /evidence/collect`, `GET /evidence`, `GET /evidence/pain-points`
+- Opportunities: `POST /opportunities/discover`, `GET /opportunities`
+- Gaps: `POST /gaps/analyze`, `GET /gaps`, `GET /gaps/{id}`
 - `GET /docs`
