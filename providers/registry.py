@@ -19,6 +19,7 @@ from providers.mock import MockProvider
 from providers.serp import SerpProvider
 from providers.usage import UsageTracker
 from providers.x_api import XApiProvider
+from providers.youtube import YouTubeProvider
 
 
 class ProviderRegistry:
@@ -39,6 +40,7 @@ class ProviderRegistry:
             ProviderName.GOOGLE_TRENDS: GoogleTrendsProvider(self.settings),
             ProviderName.SERP: SerpProvider(self.settings),
             ProviderName.X_API: XApiProvider(self.settings),
+            ProviderName.YOUTUBE: YouTubeProvider(self.settings),
         }
 
     def get(self, name: ProviderName | str) -> Provider:

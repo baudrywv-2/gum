@@ -20,6 +20,7 @@ ESTIMATED_UNIT_COST_USD: dict[ProviderName, float] = {
     ProviderName.GOOGLE_TRENDS: 0.0,
     ProviderName.SERP: 0.005,
     ProviderName.X_API: 0.01,
+    ProviderName.YOUTUBE: 0.0,  # free quota units; track calls, not USD
     ProviderName.REDDIT: 0.0,
 }
 

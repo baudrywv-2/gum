@@ -23,6 +23,7 @@ def test_all_named_adapters_are_mocked() -> None:
         ProviderName.GOOGLE_TRENDS,
         ProviderName.SERP,
         ProviderName.X_API,
+        ProviderName.YOUTUBE,
     ):
         assert name in statuses
         assert statuses[name].mode is ProviderMode.MOCK
@@ -70,7 +71,7 @@ def test_providers_api_list_and_search(client: TestClient) -> None:
     body = listed.json()
     assert body["force_mock"] is True
     names = {p["name"] for p in body["providers"]}
-    assert {"mock", "google_ads", "google_trends", "serp", "x_api"} <= names
+    assert {"mock", "google_ads", "google_trends", "serp", "x_api", "youtube"} <= names
     assert all(p["mode"] == "mock" for p in body["providers"])
 
     search = client.post(
