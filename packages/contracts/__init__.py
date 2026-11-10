@@ -10,6 +10,15 @@ from packages.contracts.evidence import (
     Provenance,
     ReliabilityLevel,
 )
+from packages.contracts.formats import (
+    ComplexityLevel,
+    FormatDecision,
+    FormatEvaluation,
+    FormatRecommendation,
+    RecommendFormatsRequest,
+    RecommendFormatsResult,
+    SolutionFormat,
+)
 from packages.contracts.gaps import (
     AnalyzeGapsRequest,
     AnalyzeGapsResult,
@@ -51,6 +60,7 @@ __all__ = [
     "CollectEvidenceResult",
     "CompetitorProfile",
     "CompetitorStatus",
+    "ComplexityLevel",
     "CrossSourceCorrelation",
     "DiscoverOpportunitiesRequest",
     "DiscoverOpportunitiesResult",
@@ -58,6 +68,9 @@ __all__ = [
     "EvidenceCluster",
     "EvidenceKind",
     "EvidenceRecord",
+    "FormatDecision",
+    "FormatEvaluation",
+    "FormatRecommendation",
     "GapFinding",
     "GapKind",
     "GapReport",
@@ -76,6 +89,9 @@ __all__ = [
     "ProviderResultItem",
     "ProviderStatus",
     "ProviderUsageRecord",
+    "RecommendFormatsRequest",
+    "RecommendFormatsResult",
     "ReliabilityLevel",
+    "SolutionFormat",
     "UnderservedAudienceHypothesis",
 ]
