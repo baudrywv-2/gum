@@ -57,6 +57,20 @@ Live organic hits and Trends series are tagged `MEASURED_FACT` as **observed Ser
 
 Live videos are tagged `MEASURED_FACT` as **observed YouTube results**. View/like/comment counts are public statistics — **not** purchase-intent proof. Auth (`401`/`403`), quota (`403` quotaExceeded / dailyLimitExceeded), and rate-limit (`429`) errors return `mode=unavailable` with empty items.
 
+### Platform filters (discover / research)
+
+`platforms` on `/evidence/collect`, `/opportunities/discover`, and `/reports/generate` accepts `all`, a single id, or a list:
+
+| Id | Provider | Role |
+| --- | --- | --- |
+| `trends` | `google_trends` (SerpAPI) | search |
+| `serp` | `serp` (SerpAPI) | search |
+| `youtube` | `youtube` | search |
+| `x` | `x_api` | discussion |
+| `all` | default live set above | — |
+
+Unselected providers are skipped (no mock fill-in). Responses include `platforms_requested` and `platforms_run` (mode + claim tag + item counts). Web Discovery UI exposes the same filter as chips.
+
 ## API
 
 ```bash

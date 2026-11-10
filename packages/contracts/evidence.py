@@ -7,9 +7,10 @@ from enum import Enum
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from packages.contracts.claim_tags import ClaimTag
+from packages.contracts.platforms import parse_platforms
 from packages.contracts.providers import ProviderMode, ProviderName
 
 
@@ -75,6 +76,9 @@ class CollectEvidenceRequest(BaseModel):
     include_search: bool = True
     include_discussions: bool = True
     extract_pain_points: bool = True
+    # Convenience filter: "all" | "youtube" | ["serp","x"] — expands to provider lists.
+    # When set, overrides providers_search / providers_discussion.
+    platforms: list[str] | str | None = None
     providers_search: list[ProviderName] = Field(
         default_factory=lambda: [
             ProviderName.GOOGLE_TRENDS,
@@ -88,6 +92,14 @@ class CollectEvidenceRequest(BaseModel):
     )
     limit_per_provider: int = Field(default=5, ge=1, le=50)
 
+    @field_validator("platforms")
+    @classmethod
+    def _validate_platforms(cls, value: list[str] | str | None) -> list[str] | str | None:
+        if value is None:
+            return value
+        parse_platforms(value)
+        return value
+
 
 class CollectEvidenceResult(BaseModel):
     collection_id: UUID
@@ -99,3 +111,5 @@ class CollectEvidenceResult(BaseModel):
     evidence: list[EvidenceRecord] = Field(default_factory=list)
     pain_points: list[PainPoint] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
+    platforms_requested: list[str] = Field(default_factory=list)
+    platforms_run: list[dict] = Field(default_factory=list)

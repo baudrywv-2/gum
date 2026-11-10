@@ -7,10 +7,11 @@ from enum import Enum
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from packages.contracts.formats import SolutionFormat
 from packages.contracts.opportunities import LabeledClaim
+from packages.contracts.platforms import parse_platforms
 
 
 class ScoreDimension(str, Enum):
@@ -94,6 +95,16 @@ class GenerateReportRequest(BaseModel):
     min_evidence_confidence: float = Field(default=0.0, ge=0.0, le=1.0)
     min_overall_priority: float = Field(default=0.0, ge=0.0, le=1.0)
     limit: int = Field(default=20, ge=1, le=100)
+    # "all" | "youtube" | ["serp","x"] — filters evidence providers for collection.
+    platforms: list[str] | str | None = None
+
+    @field_validator("platforms")
+    @classmethod
+    def _validate_platforms(cls, value: list[str] | str | None) -> list[str] | str | None:
+        if value is None:
+            return value
+        parse_platforms(value)
+        return value
 
 
 class GenerateReportResult(BaseModel):
@@ -103,6 +114,8 @@ class GenerateReportResult(BaseModel):
     ranked_by: ScoreDimension
     count: int
     limitations: list[str] = Field(default_factory=list)
+    platforms_requested: list[str] = Field(default_factory=list)
+    platforms_run: list[dict] = Field(default_factory=list)
 
 
 class RankReportsRequest(BaseModel):

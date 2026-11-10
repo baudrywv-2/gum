@@ -7,9 +7,10 @@ from enum import Enum
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from packages.contracts.claim_tags import ClaimTag
+from packages.contracts.platforms import parse_platforms
 from packages.contracts.providers import ProviderName
 
 
@@ -100,6 +101,16 @@ class DiscoverOpportunitiesRequest(BaseModel):
     collect_if_missing: bool = True
     min_cluster_size: int = Field(default=2, ge=1, le=50)
     max_opportunities: int = Field(default=20, ge=1, le=100)
+    # "all" | "youtube" | ["serp","trends","x"] — filters evidence providers.
+    platforms: list[str] | str | None = None
+
+    @field_validator("platforms")
+    @classmethod
+    def _validate_platforms(cls, value: list[str] | str | None) -> list[str] | str | None:
+        if value is None:
+            return value
+        parse_platforms(value)
+        return value
 
 
 class DiscoverOpportunitiesResult(BaseModel):
@@ -115,3 +126,5 @@ class DiscoverOpportunitiesResult(BaseModel):
     correlations: list[CrossSourceCorrelation] = Field(default_factory=list)
     opportunities: list[Opportunity] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
+    platforms_requested: list[str] = Field(default_factory=list)
+    platforms_run: list[dict] = Field(default_factory=list)
