@@ -29,9 +29,13 @@ docs/
 
 See [scoring-reporting.md](scoring-reporting.md).
 
-## Deferred (post-M7)
+6. **M8** Web dashboard (discovery-first SaaS UI)
 
-Web dashboard (M8), MCP (M9), validation/learning (M10), live provider clients.
+See [web-dashboard.md](web-dashboard.md).
+
+## Deferred (post-M8)
+
+MCP (M9), validation/learning (M10), live provider clients.
 
 ## Design rules
 

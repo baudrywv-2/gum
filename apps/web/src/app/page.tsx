@@ -1,111 +1,97 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { API_BASE, getHealth, listReports, type HealthPayload } from "@/lib/api";
 
-type HealthPayload = {
-  status: string;
-  service: string;
-  version: string;
-  database: string;
-  timestamp: string;
-};
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ??
-  "http://127.0.0.1:8000";
-
-export default function Home() {
+export default function OverviewPage() {
   const [health, setHealth] = useState<HealthPayload | null>(null);
+  const [reportCount, setReportCount] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-
-    async function loadHealth() {
-      setLoading(true);
-      setError(null);
+    async function load() {
       try {
-        const response = await fetch(`${API_BASE}/health`, {
-          cache: "no-store",
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const payload = (await response.json()) as HealthPayload;
+        const [h, reports] = await Promise.all([
+          getHealth(),
+          listReports().catch(() => ({ count: 0, reports: [] })),
+        ]);
         if (!cancelled) {
-          setHealth(payload);
+          setHealth(h);
+          setReportCount(reports.count);
+          setError(null);
         }
       } catch (err) {
         if (!cancelled) {
-          setHealth(null);
-          setError(err instanceof Error ? err.message : "Unknown error");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
+          setError(err instanceof Error ? err.message : "API unreachable");
         }
       }
     }
-
-    void loadHealth();
+    void load();
     return () => {
       cancelled = true;
     };
   }, []);
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#1a2332_0%,_#0b0f14_55%)] text-zinc-100">
-      <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6 py-16">
-        <p className="text-sm uppercase tracking-[0.2em] text-teal-300/80">
-          Milestone 1 foundation
-        </p>
-        <h1 className="mt-3 text-5xl font-semibold tracking-tight text-white sm:text-6xl">
-          GUM
-        </h1>
-        <p className="mt-4 max-w-xl text-lg text-zinc-300">
-          Opportunity Intelligence Engine — monorepo scaffold with a Next.js
-          shell, FastAPI health API, Postgres + Alembic, and shared contracts.
-        </p>
+    <main>
+      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">
+        Discovery-first workspace
+      </p>
+      <h2 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+        Start with the problem, not the product.
+      </h2>
+      <p className="mt-4 max-w-2xl text-lg text-zinc-300">
+        GUM collects evidence, surfaces gaps, compares solution formats, and
+        scores opportunities with labeled claims — never fabricated demand.
+      </p>
 
-        <section className="mt-10 border-t border-white/10 pt-8">
-          <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-400">
-            API health
-          </h2>
-          {loading && (
-            <p className="mt-3 text-zinc-400">Checking {API_BASE}/health…</p>
-          )}
-          {!loading && error && (
-            <p className="mt-3 text-amber-300">
-              API unreachable ({error}). Start the backend per docs/setup.md.
-            </p>
-          )}
-          {!loading && health && (
-            <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
-              <div>
-                <dt className="text-zinc-500">Status</dt>
-                <dd className="mt-1 font-medium text-teal-300">{health.status}</dd>
-              </div>
-              <div>
-                <dt className="text-zinc-500">Database</dt>
-                <dd className="mt-1 font-medium">{health.database}</dd>
-              </div>
-              <div>
-                <dt className="text-zinc-500">Service</dt>
-                <dd className="mt-1 font-medium">{health.service}</dd>
-              </div>
-              <div>
-                <dt className="text-zinc-500">Version</dt>
-                <dd className="mt-1 font-medium">{health.version}</dd>
-              </div>
-              <div className="col-span-2">
-                <dt className="text-zinc-500">Timestamp</dt>
-                <dd className="mt-1 font-medium">{health.timestamp}</dd>
-              </div>
-            </dl>
-          )}
-        </section>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <Link
+          href="/discover"
+          className="rounded-md bg-teal-400 px-5 py-2.5 text-sm font-medium text-zinc-950 hover:bg-teal-300"
+        >
+          Open discovery
+        </Link>
+        <Link
+          href="/reports"
+          className="rounded-md border border-white/15 px-5 py-2.5 text-sm text-zinc-100 hover:bg-white/5"
+        >
+          View reports
+        </Link>
       </div>
+
+      <section className="mt-12 border-t border-white/10 pt-8">
+        <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-400">
+          Backend status
+        </h3>
+        {error && (
+          <p className="mt-3 text-amber-300">
+            API unreachable at {API_BASE} ({error}). Start the FastAPI service.
+          </p>
+        )}
+        {!error && health && (
+          <dl className="mt-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+            <div>
+              <dt className="text-zinc-500">Status</dt>
+              <dd className="mt-1 text-teal-300">{health.status}</dd>
+            </div>
+            <div>
+              <dt className="text-zinc-500">Version</dt>
+              <dd className="mt-1">{health.version}</dd>
+            </div>
+            <div>
+              <dt className="text-zinc-500">Database</dt>
+              <dd className="mt-1">{health.database}</dd>
+            </div>
+            <div>
+              <dt className="text-zinc-500">Reports</dt>
+              <dd className="mt-1">{reportCount ?? "—"}</dd>
+            </div>
+          </dl>
+        )}
+      </section>
     </main>
   );
 }
