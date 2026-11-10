@@ -1,6 +1,6 @@
-# Provider infrastructure (Milestone 2)
+# Provider infrastructure (Milestone 2+)
 
-Modular, replaceable data-source adapters. **Default is MOCK** via `GUM_FORCE_MOCK_PROVIDERS=true`. The X adapter can run **live recent-search** when a bearer token is set and force-mock is disabled.
+Modular, replaceable data-source adapters. **Default is MOCK** via `GUM_FORCE_MOCK_PROVIDERS=true`. Live paths exist for **X**, **SerpAPI Google organic**, and **SerpAPI Google Trends** when credentials are set and force-mock is disabled.
 
 ## Package layout
 
@@ -13,8 +13,9 @@ providers/
   registry.py        Registry + search facade
   mock.py            Always-on mock provider
   google_ads.py      Keyword Planner stub (mocked)
-  google_trends.py   Trends stub (mocked)
-  serp.py            SERP stub (mocked)
+  google_trends.py   Google Trends via SerpAPI (live when configured; else mock)
+  serp.py            Google organic via SerpAPI (live when configured; else mock)
+  serpapi_http.py    Shared SerpAPI HTTP / error helpers
   x_api.py           X recent-search (live when configured; else mock)
 packages/contracts/providers.py   Shared request/response/status models
 ```
@@ -24,8 +25,8 @@ packages/contracts/providers.py   Shared request/response/status models
 | Mode | Meaning |
 | --- | --- |
 | `mock` | Synthetic response; claim tag `UNVERIFIED_CLAIM`; limitations listed |
-| `live` | Real provider response (X recent-search only today); claim tags distinguish observed posts |
-| `unavailable` | Honest hard failure (auth / rate-limit / HTTP) — no fabricated volume |
+| `live` | Real provider response; claim tags distinguish observed results |
+| `unavailable` | Honest hard failure (auth / quota / rate-limit / HTTP) — no fabricated volume |
 
 `GUM_FORCE_MOCK_PROVIDERS=true` (default) keeps every adapter mocked even if credentials exist.
 
@@ -35,7 +36,17 @@ packages/contracts/providers.py   Shared request/response/status models
 2. Set `GUM_FORCE_MOCK_PROVIDERS=false`.
 3. `POST /providers/x_api/search` (or `XApiProvider.search`) calls `GET {X_API_BASE_URL}/tweets/search/recent`.
 
-Live posts are tagged `MEASURED_FACT` as **observed X posts**, with limitations that social signals are **not** purchase-intent or market-size proof. Auth (`401`/`403`) and rate-limit (`429`) errors return `mode=unavailable` with empty items — never mock volume on failure.
+Live posts are tagged `MEASURED_FACT` as **observed X posts**, with limitations that social signals are **not** purchase-intent or market-size proof. Auth (`401`/`403`), credits (`402`), and rate-limit (`429`) errors return `mode=unavailable` with empty items — never mock volume on failure.
+
+### SerpAPI live paths (organic + Trends)
+
+1. Set `SERPAPI_API_KEY` in gitignored `.env` (legacy `SERP_API_KEY` also accepted).
+2. Optional: `SERP_API_BASE_URL=https://serpapi.com` (default).
+3. Set `GUM_FORCE_MOCK_PROVIDERS=false`.
+4. `POST /providers/serp/search` → `engine=google` organic results.
+5. `POST /providers/google_trends/search` → `engine=google_trends` interest-over-time (same key).
+
+Live organic hits and Trends series are tagged `MEASURED_FACT` as **observed SerpAPI payloads**, with limitations that SERP rankings / relative Trends indexes are **not** demand volume. Auth, quota, and HTTP errors return `mode=unavailable` with empty items.
 
 ## API
 
@@ -61,8 +72,8 @@ Migration `20261110_0002` adds:
 
 ## Credential placeholders
 
-See `.env.example`. Most adapters remain stubs. **X** is the exception: with `X_API_BEARER_TOKEN` and `GUM_FORCE_MOCK_PROVIDERS=false`, recent-search runs live (read-only).
+See `.env.example`. Google Ads remains a stub. **X** and **SerpAPI** (SERP + Trends) can run live when configured and force-mock is off.
 
-## Out of scope (Milestone 3+)
+## Out of scope
 
-Evidence collection pipelines, discovery engines, scoring, MCP tools.
+Auth/workspaces, background workers, Playwright E2E, inventing demand from provider snapshots.
