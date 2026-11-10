@@ -165,8 +165,19 @@ curl -s http://127.0.0.1:8000/formats
 
 Details: [format-recommendation.md](format-recommendation.md).
 
+## 14. Scoring & reporting smoke (Milestone 7)
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/reports/generate \
+  -H 'content-type: application/json' \
+  -d '{"query":"freelancer invoicing calculator tool","geography":"US","language":"en"}'
+curl -s 'http://127.0.0.1:8000/reports?rank_by=overall_priority'
+```
+
+Details: [scoring-reporting.md](scoring-reporting.md).
+
 ## Milestone boundaries
 
-**M1–M6 in scope:** monorepo, providers (mock), evidence, discovery, gap analysis, format recommendation (hypotheses with labeled select/reject reasons), tests, docs.
+**M1–M7 in scope:** monorepo through scoring/reporting with labeled claims and no fabricated demand.
 
-**Out of scope until approval (M7+):** full scoring/reporting, live paid providers, MCP, dashboard features beyond the shell.
+**Remaining in continuous run:** web dashboard (M8), MCP (M9), validation/learning (M10). Live paid providers stay off unless credentials exist.

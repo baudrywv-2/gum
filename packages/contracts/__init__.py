@@ -29,6 +29,15 @@ from packages.contracts.gaps import (
     GapReport,
 )
 from packages.contracts.health import HealthStatus
+from packages.contracts.scoring import (
+    GenerateReportRequest,
+    GenerateReportResult,
+    OpportunityReport,
+    OpportunityScores,
+    RankReportsRequest,
+    ScoreDimension,
+    ScoreExplanation,
+)
 from packages.contracts.opportunities import (
     CrossSourceCorrelation,
     DiscoverOpportunitiesRequest,
@@ -74,10 +83,14 @@ __all__ = [
     "GapFinding",
     "GapKind",
     "GapReport",
+    "GenerateReportRequest",
+    "GenerateReportResult",
     "HealthStatus",
     "LabeledClaim",
     "MockProviderResult",
     "Opportunity",
+    "OpportunityReport",
+    "OpportunityScores",
     "OpportunityType",
     "PainPoint",
     "Provenance",
@@ -89,9 +102,12 @@ __all__ = [
     "ProviderResultItem",
     "ProviderStatus",
     "ProviderUsageRecord",
+    "RankReportsRequest",
     "RecommendFormatsRequest",
     "RecommendFormatsResult",
     "ReliabilityLevel",
+    "ScoreDimension",
+    "ScoreExplanation",
     "SolutionFormat",
     "UnderservedAudienceHypothesis",
 ]

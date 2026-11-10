@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.db import check_database_connection
-from app.routers import evidence, formats, gaps, health, opportunities, providers
+from app.routers import evidence, formats, gaps, health, opportunities, providers, reports
 
 
 @asynccontextmanager
@@ -26,12 +26,11 @@ def create_app() -> FastAPI:
     application = FastAPI(
         title="GUM API",
         description=(
-            "Opportunity Intelligence Engine — Milestone 6 format recommendation "
-            "(compare solution formats; primary + alternatives with evidence-backed "
-            "select/reject reasons; complexity, maintenance, monetization, cheapest validation; "
-            "prefer simple when evidence supports it)."
+            "Opportunity Intelligence Engine — Milestone 7 scoring & reporting "
+            "(independent transparent scores with explanations, structured opportunity "
+            "reports, filter/rank; never compensate for missing evidence)."
         ),
-        version="0.6.0",
+        version="0.7.0",
         lifespan=lifespan,
     )
     application.add_middleware(
@@ -47,6 +46,7 @@ def create_app() -> FastAPI:
     application.include_router(opportunities.router)
     application.include_router(gaps.router)
     application.include_router(formats.router)
+    application.include_router(reports.router)
     return application
 
 

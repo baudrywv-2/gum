@@ -366,3 +366,62 @@ class FormatEvaluationRow(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class OpportunityReportRow(Base):
+    """Persisted structured opportunity report with scores (Milestone 7)."""
+
+    __tablename__ = "opportunity_reports"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    collection_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    query: Mapped[str] = mapped_column(Text, nullable=False)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    problem: Mapped[str] = mapped_column(Text, nullable=False)
+    audience: Mapped[str | None] = mapped_column(Text, nullable=True)
+    geography: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    language: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    demand_evidence: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    search_behaviour_keywords: Mapped[list[Any]] = mapped_column(
+        JSONB, nullable=False, default=list
+    )
+    discussion_evidence: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    competitors: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    competitor_weaknesses: Mapped[list[Any]] = mapped_column(
+        JSONB, nullable=False, default=list
+    )
+    unmet_needs: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    recommended_format: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    alternative_formats: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    scores: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    complexity: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    build_maintenance: Mapped[str | None] = mapped_column(Text, nullable=True)
+    monetization_hypotheses: Mapped[list[Any]] = mapped_column(
+        JSONB, nullable=False, default=list
+    )
+    risks: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    source_urls: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    timestamps: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    contradictions: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    missing_info: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    cheapest_validation_experiment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    next_actions: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    claims: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    evidence_ids: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    opportunity_ids: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    format_recommendation_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
+    gap_report_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
+    attributes: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
