@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from providers.serpapi_http import DEFAULT_SERPAPI_BASE_URL
 
 
 class ProviderSettings(BaseSettings):
@@ -15,6 +17,7 @@ class ProviderSettings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        populate_by_name=True,
     )
 
     force_mock_providers: bool = Field(default=True, alias="GUM_FORCE_MOCK_PROVIDERS")
@@ -36,13 +39,19 @@ class ProviderSettings(BaseSettings):
         default=None, alias="GOOGLE_ADS_CUSTOMER_ID"
     )
 
-    # Google Trends (placeholder — no paid live client in M2)
+    # Google Trends flag (informational; live Trends uses SERPAPI_API_KEY)
     google_trends_enabled: bool = Field(default=False, alias="GOOGLE_TRENDS_ENABLED")
 
-    # SERP provider (e.g. SerpAPI / custom)
-    serp_api_key: str | None = Field(default=None, alias="SERP_API_KEY")
+    # SerpAPI — organic Google SERP + Google Trends (same key)
+    serp_api_key: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("SERPAPI_API_KEY", "SERP_API_KEY"),
+        serialization_alias="SERPAPI_API_KEY",
+    )
     serp_api_base_url: str = Field(
-        default="https://example.invalid/serp", alias="SERP_API_BASE_URL"
+        default=DEFAULT_SERPAPI_BASE_URL,
+        validation_alias=AliasChoices("SERP_API_BASE_URL", "SERPAPI_BASE_URL"),
+        serialization_alias="SERP_API_BASE_URL",
     )
 
     # X API
