@@ -1,6 +1,6 @@
-# GUM setup (Milestone 1)
+# GUM setup
 
-Exact commands to run the foundation stack locally.
+Exact commands to run the local stack (Milestones 1–2).
 
 ## Prerequisites
 
@@ -25,6 +25,7 @@ Default values:
 
 - `DATABASE_URL=postgresql+psycopg2://gum:gum@localhost:5432/gum`
 - `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000`
+- `GUM_FORCE_MOCK_PROVIDERS=true` (no paid/live provider calls)
 
 ## 3. Start PostgreSQL
 
@@ -107,8 +108,20 @@ export PYTHONPATH="$(pwd):$(pwd)/services/api"
 pytest -q
 ```
 
-## Milestone 1 boundaries
+## 9. Provider smoke (Milestone 2)
 
-In scope: monorepo scaffold, FE/BE/DB, contracts, health-check, mock provider stub, tests, docs.
+```bash
+curl -s http://127.0.0.1:8000/providers
+curl -s -X POST http://127.0.0.1:8000/providers/google_ads/search \
+  -H 'content-type: application/json' \
+  -d '{"query":"invoice automation","limit":3}'
+curl -s http://127.0.0.1:8000/providers/usage
+```
 
-Out of scope until approval: real providers, research engine, scoring, MCP, dashboard features beyond the shell.
+Details: [providers.md](providers.md).
+
+## Milestone boundaries
+
+**M1–M2 in scope:** monorepo, FE/BE/DB, contracts, health-check, provider interfaces/mocks/stubs, cache, usage tracking, tests, docs.
+
+**Out of scope until approval (M3+):** evidence collection pipelines, discovery engine, live paid providers, scoring, MCP, dashboard features beyond the shell.

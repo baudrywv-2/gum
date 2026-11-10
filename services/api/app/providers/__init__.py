@@ -1,5 +1,6 @@
-"""Provider adapters. Milestone 1 ships mock stubs only."""
+"""API-facing provider re-exports (implementations live in top-level providers/)."""
 
-from app.providers.mock import MockProvider
+from providers.mock import MockProvider
+from providers.registry import ProviderRegistry, get_registry
 
-__all__ = ["MockProvider"]
+__all__ = ["MockProvider", "ProviderRegistry", "get_registry"]

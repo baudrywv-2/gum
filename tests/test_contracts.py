@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 
 from packages.contracts import ClaimTag, MockProviderResult, ProviderName
 from packages.contracts.health import HealthStatus
+from packages.contracts.providers import ProviderMode, ProviderRequest, ProviderResponse
 
 
 def test_claim_tags_cover_brief_vocabulary() -> None:
@@ -19,6 +20,7 @@ def test_claim_tags_cover_brief_vocabulary() -> None:
 def test_mock_provider_result_round_trip() -> None:
     result = MockProviderResult(
         provider=ProviderName.MOCK,
+        mode=ProviderMode.MOCK,
         query="underserved niches",
         summary="stub",
         claim_tag=ClaimTag.UNVERIFIED_CLAIM,
@@ -31,11 +33,26 @@ def test_mock_provider_result_round_trip() -> None:
     assert restored.provider is ProviderName.MOCK
 
 
+def test_provider_request_and_response() -> None:
+    request = ProviderRequest(query="seo gaps", limit=5)
+    response = ProviderResponse(
+        provider=ProviderName.SERP,
+        mode=ProviderMode.MOCK,
+        query=request.query,
+        summary="mocked",
+        claim_tag=ClaimTag.UNVERIFIED_CLAIM,
+        fetched_at=datetime.now(timezone.utc),
+        limitations=["stub"],
+    )
+    assert response.mode is ProviderMode.MOCK
+    assert request.limit == 5
+
+
 def test_health_status_contract() -> None:
     status = HealthStatus(
         status="ok",
         service="gum-api",
-        version="0.1.0",
+        version="0.2.0",
         database="connected",
         timestamp=datetime.now(timezone.utc),
     )

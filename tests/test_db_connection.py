@@ -14,6 +14,9 @@ def test_database_connects() -> None:
         assert value == 1
 
 
-def test_health_probes_table_exists() -> None:
+def test_m1_and_m2_tables_exist() -> None:
     inspector = inspect(get_engine())
-    assert "health_probes" in inspector.get_table_names()
+    tables = set(inspector.get_table_names())
+    assert "health_probes" in tables
+    assert "provider_usage_events" in tables
+    assert "provider_cache_entries" in tables
