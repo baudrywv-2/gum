@@ -14,7 +14,7 @@ def test_database_connects() -> None:
         assert value == 1
 
 
-def test_m1_m2_m3_tables_exist() -> None:
+def test_m1_through_m4_tables_exist() -> None:
     inspector = inspect(get_engine())
     tables = set(inspector.get_table_names())
     assert "health_probes" in tables
@@ -23,4 +23,10 @@ def test_m1_m2_m3_tables_exist() -> None:
     assert "evidence_collections" in tables
     assert "evidence_records" in tables
     assert "pain_points" in tables
+    assert "opportunity_runs" in tables
+    assert "evidence_clusters" in tables
+    assert "opportunities" in tables
+    assert "evidence_collection_members" in tables
+
+
 

@@ -132,8 +132,19 @@ curl -s http://127.0.0.1:8000/evidence/pain-points
 
 Details: [evidence.md](evidence.md).
 
+## 11. Opportunity discovery smoke (Milestone 4)
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/opportunities/discover \
+  -H 'content-type: application/json' \
+  -d '{"query":"freelancer invoicing","geography":"US","language":"en"}'
+curl -s http://127.0.0.1:8000/opportunities
+```
+
+Details: [opportunity-discovery.md](opportunity-discovery.md).
+
 ## Milestone boundaries
 
-**M1–M3 in scope:** monorepo, FE/BE/DB, contracts, health-check, provider mocks/stubs, cache, usage tracking, evidence collection (search/discussion/pain points/provenance/dedupe), tests, docs.
+**M1–M4 in scope:** monorepo, FE/BE/DB, contracts, providers (mock), evidence collection, opportunity discovery (clusters/themes/audiences/correlation), tests, docs.
 
-**Out of scope until approval (M4+):** opportunity discovery, competitor gap analysis, format recommendation, scoring, live paid providers, MCP, dashboard features beyond the shell.
+**Out of scope until approval (M5+):** competitor/gap analysis, format recommendation, scoring, live paid providers, MCP, dashboard features beyond the shell.

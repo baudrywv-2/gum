@@ -107,10 +107,8 @@ class EvidenceCollector:
         pain_updated = 0
         pain_points = []
         if request.extract_pain_points:
-            # Prefer discussion evidence; fall back to all stored if empty.
-            source = discussion_records or [
-                r for r in stored if not r.is_duplicate
-            ]
+            # Include deduped discussion rows linked into this collection.
+            source = discussion_records or stored
             extracted = extract_pain_points(
                 source, collection_id=collection.id
             )
@@ -127,6 +125,15 @@ class EvidenceCollector:
         # Deduplicate limitation strings while preserving order.
         unique_limitations = list(dict.fromkeys(limitations))
 
+        # Return all evidence visible on this collection (new + linked duplicates).
+        # Deduped rows remain labeled via is_duplicate for transparency.
+        visible = self.store.list_evidence(collection_id=collection.id, limit=500)
+        by_id = {r.id: r for r in stored if r.id is not None}
+        for item in visible:
+            prior = by_id.get(item.id)
+            if prior is not None and prior.is_duplicate:
+                item.is_duplicate = True
+
         return CollectEvidenceResult(
             collection_id=collection.id,
             query=request.query,
@@ -134,7 +141,7 @@ class EvidenceCollector:
             evidence_deduplicated=deduped,
             pain_points_created=pain_created,
             pain_points_updated=pain_updated,
-            evidence=[r for r in stored if not r.is_duplicate],
+            evidence=visible,
             pain_points=pain_points,
             limitations=unique_limitations,
         )

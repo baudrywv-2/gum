@@ -86,6 +86,22 @@ class EvidenceCollection(Base):
     )
 
 
+class EvidenceCollectionMember(Base):
+    """Many-to-many link so deduped evidence stays visible on later collections."""
+
+    __tablename__ = "evidence_collection_members"
+
+    collection_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True
+    )
+    evidence_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
 class EvidenceRecordRow(Base):
     """Persisted search or discussion evidence with provenance + fingerprint."""
 
@@ -136,6 +152,83 @@ class PainPointRow(Base):
     evidence_ids: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
     source_providers: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
     limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class OpportunityRun(Base):
+    """One opportunity-discovery run over an evidence collection."""
+
+    __tablename__ = "opportunity_runs"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    collection_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    query: Mapped[str] = mapped_column(Text, nullable=False)
+    geography: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    language: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="completed")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class EvidenceClusterRow(Base):
+    """Persisted evidence clusters from a discovery run."""
+
+    __tablename__ = "evidence_clusters"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    run_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    label: Mapped[str] = mapped_column(Text, nullable=False)
+    evidence_ids: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    providers: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    kinds: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    shared_tokens: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    size: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    claim_tag: Mapped[str] = mapped_column(String(64), nullable=False)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class OpportunityRow(Base):
+    """Discovered opportunity candidate with labeled claims."""
+
+    __tablename__ = "opportunities"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    run_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True, index=True
+    )
+    collection_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True, index=True
+    )
+    opportunity_type: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    problem: Mapped[str] = mapped_column(Text, nullable=False)
+    audience: Mapped[str | None] = mapped_column(Text, nullable=True)
+    geography: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    language: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    claims: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    evidence_ids: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    providers: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    themes: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    missing_info: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    attributes: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
