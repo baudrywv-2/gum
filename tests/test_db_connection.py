@@ -33,6 +33,7 @@ def test_m1_through_m4_tables_exist() -> None:
     assert "format_recommendations" in tables
     assert "format_evaluations" in tables
     assert "opportunity_reports" in tables
+    assert "saved_opportunities" in tables
 
 
 

@@ -26,10 +26,10 @@ def create_app() -> FastAPI:
     application = FastAPI(
         title="GUM API",
         description=(
-            "Opportunity Intelligence Engine — Milestone 8 web dashboard "
-            "(discovery-first SaaS UI wired to the shared API)."
+            "Opportunity Intelligence Engine — Milestone 9 Cursor MCP "
+            "(shared engines; tools for discovery, gaps, formats, scoring, reports)."
         ),
-        version="0.8.0",
+        version="0.9.0",
         lifespan=lifespan,
     )
     application.add_middleware(

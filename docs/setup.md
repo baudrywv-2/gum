@@ -185,8 +185,17 @@ cd apps/web && npm run dev
 
 Details: [web-dashboard.md](web-dashboard.md).
 
+## 16. MCP smoke (Milestone 9)
+
+```bash
+export PYTHONPATH="$(pwd):$(pwd)/services/api:$(pwd)/services/mcp"
+python services/mcp/server.py   # stdio for Cursor
+```
+
+Details: [mcp.md](mcp.md).
+
 ## Milestone boundaries
 
-**M1–M8 in scope:** through discovery-first web dashboard.
+**M1–M9 in scope:** through Cursor MCP sharing backend engines.
 
-**Remaining in continuous run:** MCP (M9), validation/learning (M10). Live paid providers stay off unless credentials exist.
+**Remaining in continuous run:** validation/learning (M10). Live paid providers stay off unless credentials exist.
