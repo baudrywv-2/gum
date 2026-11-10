@@ -1,4 +1,4 @@
-"""SERP provider adapter — MOCK until SERP_API_KEY is configured (still stubbed in M2)."""
+"""SERP provider adapter — MOCK until SERP_API_KEY is configured (still stubbed)."""
 
 from __future__ import annotations
 
@@ -31,26 +31,34 @@ class SerpProvider(Provider):
             configured=configured,
             capabilities=self.capabilities,
             notes=(
-                "Stubbed/mocked. Set SERP_API_KEY and disable force-mock for future live SERP."
-                " Milestone 2 never issues paid SERP requests."
+                "Stubbed/mocked. Set SERP_API_KEY and disable force-mock for future live SERP. "
+                "No paid SERP requests are issued while mocked."
             ),
         )
 
     def search(self, request: ProviderRequest) -> ProviderResponse:
+        slug = request.query.strip().lower().replace(" ", "-") or "topic"
         items = [
             ProviderResultItem(
-                title=f"[MOCK serp] Result about {request.query}",
-                snippet="Synthetic organic result for adapter testing.",
-                url=f"https://example.invalid/search?q={request.query.replace(' ', '+')}",
+                title=f"InvoiceBot — {request.query} software",
+                snippet=f"Mocked SERP listing for InvoiceBot covering {request.query}.",
+                url=f"https://invoicebot.example.invalid/{slug}",
                 claim_tag=ClaimTag.UNVERIFIED_CLAIM,
-                attributes={"position": 1, "mocked": True},
+                attributes={"position": 1, "mocked": True, "brand": "InvoiceBot"},
             ),
             ProviderResultItem(
-                title=f"[MOCK serp] Guide: {request.query}",
-                snippet="Second synthetic SERP hit — not a real crawl.",
-                url="https://example.invalid/guide",
+                title=f"Ledgerly Guide: {request.query}",
+                snippet=f"Mocked guide page from Ledgerly about {request.query}.",
+                url=f"https://ledgerly.example.invalid/guides/{slug}",
                 claim_tag=ClaimTag.UNVERIFIED_CLAIM,
-                attributes={"position": 2, "mocked": True},
+                attributes={"position": 2, "mocked": True, "brand": "Ledgerly"},
+            ),
+            ProviderResultItem(
+                title=f"PayStacker — best {request.query} tools",
+                snippet="Mocked comparison-style SERP hit (synthetic).",
+                url=f"https://paystacker.example.invalid/tools/{slug}",
+                claim_tag=ClaimTag.UNVERIFIED_CLAIM,
+                attributes={"position": 3, "mocked": True, "brand": "PayStacker"},
             ),
         ]
         return mock_response(
@@ -59,7 +67,7 @@ class SerpProvider(Provider):
             summary=f"Mocked SERP snapshot for '{request.query}'",
             items=items[: request.limit],
             limitations=[
-                "SERP adapter is a stub in Milestone 2.",
+                "SERP adapter is a stub — listings are synthetic placeholders.",
                 "No external SERP API call was made.",
             ],
             raw={"adapter": "serp", "mocked": True},

@@ -232,3 +232,79 @@ class OpportunityRow(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class GapReportRow(Base):
+    """Persisted competitor/gap analysis report."""
+
+    __tablename__ = "gap_reports"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    collection_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    query: Mapped[str] = mapped_column(Text, nullable=False)
+    geography: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    language: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    search_vs_feedback: Mapped[str] = mapped_column(Text, nullable=False)
+    claims: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    missing_info: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class CompetitorRow(Base):
+    """Competitor / existing-solution profile tied to a gap report."""
+
+    __tablename__ = "competitors"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    report_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_providers: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    search_evidence_ids: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    feedback_evidence_ids: Mapped[list[Any]] = mapped_column(
+        JSONB, nullable=False, default=list
+    )
+    status: Mapped[str] = mapped_column(String(64), nullable=False)
+    claims: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    weaknesses: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    attributes: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class GapFindingRow(Base):
+    """Individual evidence-backed gap finding."""
+
+    __tablename__ = "gap_findings"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    report_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    kind: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    claims: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    evidence_ids: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    competitor_name: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    missing_info: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    limitations: Mapped[list[Any]] = mapped_column(JSONB, nullable=False, default=list)
+    attributes: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )

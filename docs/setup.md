@@ -143,8 +143,19 @@ curl -s http://127.0.0.1:8000/opportunities
 
 Details: [opportunity-discovery.md](opportunity-discovery.md).
 
+## 12. Gap analysis smoke (Milestone 5)
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/gaps/analyze \
+  -H 'content-type: application/json' \
+  -d '{"query":"freelancer invoicing","geography":"US","language":"en"}'
+curl -s http://127.0.0.1:8000/gaps
+```
+
+Details: [gap-analysis.md](gap-analysis.md).
+
 ## Milestone boundaries
 
-**M1–M4 in scope:** monorepo, FE/BE/DB, contracts, providers (mock), evidence collection, opportunity discovery (clusters/themes/audiences/correlation), tests, docs.
+**M1–M5 in scope:** monorepo, providers (mock), evidence, opportunity discovery, competitor/gap analysis (evidence-backed; no weak labels without evidence), tests, docs.
 
-**Out of scope until approval (M5+):** competitor/gap analysis, format recommendation, scoring, live paid providers, MCP, dashboard features beyond the shell.
+**Out of scope until approval (M6+):** format recommendation, scoring/reporting, live paid providers, MCP, dashboard features beyond the shell.

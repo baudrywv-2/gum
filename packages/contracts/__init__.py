@@ -10,6 +10,15 @@ from packages.contracts.evidence import (
     Provenance,
     ReliabilityLevel,
 )
+from packages.contracts.gaps import (
+    AnalyzeGapsRequest,
+    AnalyzeGapsResult,
+    CompetitorProfile,
+    CompetitorStatus,
+    GapFinding,
+    GapKind,
+    GapReport,
+)
 from packages.contracts.health import HealthStatus
 from packages.contracts.opportunities import (
     CrossSourceCorrelation,
@@ -35,9 +44,13 @@ from packages.contracts.providers import (
 )
 
 __all__ = [
+    "AnalyzeGapsRequest",
+    "AnalyzeGapsResult",
     "ClaimTag",
     "CollectEvidenceRequest",
     "CollectEvidenceResult",
+    "CompetitorProfile",
+    "CompetitorStatus",
     "CrossSourceCorrelation",
     "DiscoverOpportunitiesRequest",
     "DiscoverOpportunitiesResult",
@@ -45,6 +58,9 @@ __all__ = [
     "EvidenceCluster",
     "EvidenceKind",
     "EvidenceRecord",
+    "GapFinding",
+    "GapKind",
+    "GapReport",
     "HealthStatus",
     "LabeledClaim",
     "MockProviderResult",
