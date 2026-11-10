@@ -120,8 +120,20 @@ curl -s http://127.0.0.1:8000/providers/usage
 
 Details: [providers.md](providers.md).
 
+## 10. Evidence collection smoke (Milestone 3)
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/evidence/collect \
+  -H 'content-type: application/json' \
+  -d '{"query":"freelancer invoicing","geography":"US","language":"en"}'
+curl -s 'http://127.0.0.1:8000/evidence?kind=discussion'
+curl -s http://127.0.0.1:8000/evidence/pain-points
+```
+
+Details: [evidence.md](evidence.md).
+
 ## Milestone boundaries
 
-**M1–M2 in scope:** monorepo, FE/BE/DB, contracts, health-check, provider interfaces/mocks/stubs, cache, usage tracking, tests, docs.
+**M1–M3 in scope:** monorepo, FE/BE/DB, contracts, health-check, provider mocks/stubs, cache, usage tracking, evidence collection (search/discussion/pain points/provenance/dedupe), tests, docs.
 
-**Out of scope until approval (M3+):** evidence collection pipelines, discovery engine, live paid providers, scoring, MCP, dashboard features beyond the shell.
+**Out of scope until approval (M4+):** opportunity discovery, competitor gap analysis, format recommendation, scoring, live paid providers, MCP, dashboard features beyond the shell.

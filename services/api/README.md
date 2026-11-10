@@ -1,6 +1,6 @@
 # GUM API (`services/api`)
 
-FastAPI service for GUM (Milestones 1–2).
+FastAPI service for GUM (Milestones 1–3).
 
 ## Run
 
@@ -17,7 +17,11 @@ uvicorn app.main:app --app-dir services/api --host 127.0.0.1 --port 8000 --reloa
 ## Endpoints
 
 - `GET /health` — service + database connectivity
-- `GET /providers` — adapter status (all mocked in M2)
-- `POST /providers/{name}/search` — mocked search (`mock`, `google_ads`, `google_trends`, `serp`, `x_api`)
+- `GET /providers` — adapter status (mocked by default)
+- `POST /providers/{name}/search` — provider search
 - `GET /providers/usage` — usage / estimated-cost summary
+- `POST /evidence/collect` — collect search + discussion evidence, extract pain points
+- `GET /evidence` — list evidence (`kind`, `collection_id` filters)
+- `GET /evidence/pain-points` — recurring pain points
+- `GET /evidence/collections/{id}` — collection summary
 - `GET /docs` — OpenAPI UI

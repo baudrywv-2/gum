@@ -39,8 +39,11 @@ class XApiProvider(Provider):
     def search(self, request: ProviderRequest) -> ProviderResponse:
         items = [
             ProviderResultItem(
-                title=f"[MOCK x_api] Recent post mentioning {request.query}",
-                snippet="Synthetic social signal for pipeline tests.",
+                title=f"[MOCK x_api] Frustrated with {request.query}",
+                snippet=(
+                    f"I hate how hard it is to find a good solution for {request.query}. "
+                    "Wish there was something simpler that doesn't waste my time."
+                ),
                 url="https://x.com/example/status/0",
                 claim_tag=ClaimTag.UNVERIFIED_CLAIM,
                 attributes={
@@ -48,7 +51,21 @@ class XApiProvider(Provider):
                     "engagement": {"likes": 0, "reposts": 0},
                     "mocked": True,
                 },
-            )
+            ),
+            ProviderResultItem(
+                title=f"[MOCK x_api] Can't find help for {request.query}",
+                snippet=(
+                    f"Problem with existing tools for {request.query}: too expensive "
+                    "and they fail to cover the basics."
+                ),
+                url="https://x.com/example/status/1",
+                claim_tag=ClaimTag.UNVERIFIED_CLAIM,
+                attributes={
+                    "author": "@mock_user_2",
+                    "engagement": {"likes": 0, "reposts": 0},
+                    "mocked": True,
+                },
+            ),
         ]
         return mock_response(
             provider=self.name,

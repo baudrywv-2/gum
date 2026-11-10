@@ -44,7 +44,10 @@ class MockProvider(Provider):
             ),
             ProviderResultItem(
                 title=f"Related mock signal: {request.query} alternatives",
-                snippet="Use only to exercise pipelines until live providers are wired.",
+                snippet=(
+                    f"Users struggle with {request.query}; annoying gaps remain and "
+                    "people wish there was a clearer option."
+                ),
                 claim_tag=ClaimTag.HYPOTHESIS,
                 attributes={"rank": 2, "source": "mock"},
             ),
