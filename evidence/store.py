@@ -4,16 +4,17 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
-from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from database.models import (
     EvidenceCollection,
+    EvidenceCollectionMember,
     EvidenceRecordRow,
     PainPointRow,
 )
+from evidence.dedupe import pain_point_key
 from packages.contracts.claim_tags import ClaimTag
 from packages.contracts.evidence import (
     EvidenceKind,
@@ -23,7 +24,6 @@ from packages.contracts.evidence import (
     ReliabilityLevel,
 )
 from packages.contracts.providers import ProviderMode, ProviderName
-from evidence.dedupe import pain_point_key
 
 
 def _utcnow() -> datetime:
@@ -53,16 +53,43 @@ class EvidenceStore:
         self.session.flush()
         return row
 
+    def _link_to_collection(
+        self, *, collection_id: uuid.UUID | None, evidence_id: uuid.UUID
+    ) -> None:
+        if collection_id is None:
+            return
+        existing = self.session.scalar(
+            select(EvidenceCollectionMember).where(
+                EvidenceCollectionMember.collection_id == collection_id,
+                EvidenceCollectionMember.evidence_id == evidence_id,
+            )
+        )
+        if existing is not None:
+            return
+        self.session.add(
+            EvidenceCollectionMember(
+                collection_id=collection_id,
+                evidence_id=evidence_id,
+                created_at=_utcnow(),
+            )
+        )
+        self.session.flush()
+
     def add_evidence(self, record: EvidenceRecord) -> tuple[EvidenceRecord, bool]:
-        """Insert evidence or return existing duplicate. Returns (record, created)."""
+        """Insert evidence or reuse fingerprint duplicate; always link to collection."""
         existing = self.session.scalar(
             select(EvidenceRecordRow).where(
                 EvidenceRecordRow.fingerprint == record.fingerprint
             )
         )
         if existing is not None:
+            self._link_to_collection(
+                collection_id=record.collection_id, evidence_id=existing.id
+            )
             mapped = self._to_evidence(existing)
             mapped.is_duplicate = True
+            # Surface the requesting collection on the returned view.
+            mapped.collection_id = record.collection_id or existing.collection_id
             return mapped, False
 
         row = EvidenceRecordRow(
@@ -88,6 +115,7 @@ class EvidenceStore:
         )
         self.session.add(row)
         self.session.flush()
+        self._link_to_collection(collection_id=record.collection_id, evidence_id=row.id)
         return self._to_evidence(row), True
 
     def upsert_pain_point(self, pain: PainPoint) -> tuple[PainPoint, bool]:
@@ -99,7 +127,12 @@ class EvidenceStore:
         if existing is not None:
             existing.frequency = int(existing.frequency) + int(pain.frequency)
             merged_ids = list(
-                dict.fromkeys([*(existing.evidence_ids or []), *[str(i) for i in pain.evidence_ids]])
+                dict.fromkeys(
+                    [
+                        *(existing.evidence_ids or []),
+                        *[str(i) for i in pain.evidence_ids],
+                    ]
+                )
             )
             existing.evidence_ids = merged_ids
             providers = set(existing.source_providers or [])
@@ -135,7 +168,15 @@ class EvidenceStore:
     ) -> list[EvidenceRecord]:
         stmt = select(EvidenceRecordRow).order_by(EvidenceRecordRow.created_at.desc())
         if collection_id is not None:
-            stmt = stmt.where(EvidenceRecordRow.collection_id == collection_id)
+            member_ids = select(EvidenceCollectionMember.evidence_id).where(
+                EvidenceCollectionMember.collection_id == collection_id
+            )
+            stmt = stmt.where(
+                or_(
+                    EvidenceRecordRow.collection_id == collection_id,
+                    EvidenceRecordRow.id.in_(member_ids),
+                )
+            )
         if kind is not None:
             stmt = stmt.where(EvidenceRecordRow.kind == kind.value)
         stmt = stmt.limit(limit)

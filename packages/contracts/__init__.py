@@ -11,6 +11,17 @@ from packages.contracts.evidence import (
     ReliabilityLevel,
 )
 from packages.contracts.health import HealthStatus
+from packages.contracts.opportunities import (
+    CrossSourceCorrelation,
+    DiscoverOpportunitiesRequest,
+    DiscoverOpportunitiesResult,
+    EmergingTheme,
+    EvidenceCluster,
+    LabeledClaim,
+    Opportunity,
+    OpportunityType,
+    UnderservedAudienceHypothesis,
+)
 from packages.contracts.providers import (
     MockProviderResult,
     ProviderCapability,
@@ -27,10 +38,18 @@ __all__ = [
     "ClaimTag",
     "CollectEvidenceRequest",
     "CollectEvidenceResult",
+    "CrossSourceCorrelation",
+    "DiscoverOpportunitiesRequest",
+    "DiscoverOpportunitiesResult",
+    "EmergingTheme",
+    "EvidenceCluster",
     "EvidenceKind",
     "EvidenceRecord",
     "HealthStatus",
+    "LabeledClaim",
     "MockProviderResult",
+    "Opportunity",
+    "OpportunityType",
     "PainPoint",
     "Provenance",
     "ProviderCapability",
@@ -42,4 +61,5 @@ __all__ = [
     "ProviderStatus",
     "ProviderUsageRecord",
     "ReliabilityLevel",
+    "UnderservedAudienceHypothesis",
 ]
