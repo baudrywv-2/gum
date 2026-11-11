@@ -56,6 +56,8 @@ class OpportunityDiscoveryEngine:
             "No demand volumes, TAM, or conversion rates were fabricated.",
             "Interpretive outputs are claim-tagged; treat HYPOTHESIS/AI_INTERPRETATION as non-factual.",
         ]
+        platforms_requested: list[str] = []
+        platforms_run: list[dict] = []
 
         collection_id = request.collection_id
         if collection_id is None:
@@ -66,12 +68,19 @@ class OpportunityDiscoveryEngine:
                     query=request.query,
                     geography=request.geography,
                     language=request.language,
+                    platforms=request.platforms,
                 )
             )
             collection_id = collected.collection_id
             limitations.extend(collected.limitations)
+            platforms_requested = list(collected.platforms_requested)
+            platforms_run = list(collected.platforms_run)
         elif self.evidence_store.get_collection(collection_id) is None:
             raise ValueError(f"Unknown collection_id: {collection_id}")
+        elif request.platforms is not None:
+            from packages.contracts.platforms import resolve_platforms
+
+            platforms_requested = list(resolve_platforms(request.platforms).requested)
 
         evidence = self.evidence_store.list_evidence(
             collection_id=collection_id, limit=500
@@ -93,6 +102,8 @@ class OpportunityDiscoveryEngine:
                 collection_id=collection_id,
                 query=request.query,
                 limitations=list(dict.fromkeys(limitations)),
+                platforms_requested=platforms_requested,
+                platforms_run=platforms_run,
             )
 
         pain_points = self.evidence_store.list_pain_points(
@@ -208,6 +219,8 @@ class OpportunityDiscoveryEngine:
             correlations=correlations,
             opportunities=saved_opportunities,
             limitations=list(dict.fromkeys(limitations)),
+            platforms_requested=platforms_requested,
+            platforms_run=platforms_run,
         )
 
     @staticmethod

@@ -59,6 +59,9 @@ class ReportEngine:
         gap_report_id = None
         format_recommendation_id = None
 
+        platforms_requested: list[str] = []
+        platforms_run: list[dict] = []
+
         if collection_id is None:
             if not request.collect_if_missing:
                 raise ValueError("collection_id required when collect_if_missing=false")
@@ -67,12 +70,19 @@ class ReportEngine:
                     query=request.query,
                     geography=request.geography,
                     language=request.language,
+                    platforms=request.platforms,
                 )
             )
             collection_id = collected.collection_id
             limitations.extend(collected.limitations)
+            platforms_requested = list(collected.platforms_requested)
+            platforms_run = list(collected.platforms_run)
         elif self.evidence_store.get_collection(collection_id) is None:
             raise ValueError(f"Unknown collection_id: {collection_id}")
+        elif request.platforms is not None:
+            from packages.contracts.platforms import resolve_platforms
+
+            platforms_requested = list(resolve_platforms(request.platforms).requested)
 
         if request.run_discovery:
             discovered = self.discovery.discover(
@@ -82,10 +92,15 @@ class ReportEngine:
                     language=request.language,
                     collection_id=collection_id,
                     collect_if_missing=False,
+                    platforms=request.platforms,
                 )
             )
             opportunities = list(discovered.opportunities)
             limitations.extend(discovered.limitations)
+            if not platforms_run and discovered.platforms_run:
+                platforms_run = list(discovered.platforms_run)
+            if not platforms_requested and discovered.platforms_requested:
+                platforms_requested = list(discovered.platforms_requested)
 
         if request.run_gap_analysis:
             gap_result = self.gaps.analyze(
@@ -304,6 +319,8 @@ class ReportEngine:
             ranked_by=request.rank_by,
             count=len(ranked),
             limitations=list(dict.fromkeys(limitations)),
+            platforms_requested=platforms_requested,
+            platforms_run=platforms_run,
         )
 
     def rank_existing(self, request: RankReportsRequest) -> list[OpportunityReport]:

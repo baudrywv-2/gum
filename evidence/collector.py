@@ -18,6 +18,11 @@ from packages.contracts.evidence import (
     Provenance,
     ReliabilityLevel,
 )
+from packages.contracts.platforms import (
+    PlatformRunSummary,
+    provider_to_platform,
+    resolve_platforms,
+)
 from packages.contracts.providers import (
     ProviderMode,
     ProviderName,
@@ -41,6 +46,29 @@ class EvidenceCollector:
         self.session = session
 
     def collect(self, request: CollectEvidenceRequest) -> CollectEvidenceResult:
+        # Platform filter expands to provider lists; empty selection falls back to defaults.
+        platforms_requested: list[str] = []
+        search_providers = list(request.providers_search)
+        discussion_providers = list(request.providers_discussion)
+        include_search = request.include_search
+        include_discussions = request.include_discussions
+        if request.platforms is not None:
+            resolved = resolve_platforms(request.platforms)
+            platforms_requested = list(resolved.requested)
+            search_providers = list(resolved.search)
+            discussion_providers = list(resolved.discussion)
+            include_search = resolved.include_search
+            include_discussions = resolved.include_discussions
+            limitations_prefix = [
+                f"Platform filter active: {', '.join(platforms_requested) or 'none'}."
+            ]
+        else:
+            limitations_prefix = []
+            for provider in [*search_providers, *discussion_providers]:
+                platform = provider_to_platform(provider)
+                if platform and platform not in platforms_requested:
+                    platforms_requested.append(platform)
+
         collection = self.store.create_collection(
             query=request.query,
             geography=request.geography,
@@ -50,17 +78,29 @@ class EvidenceCollector:
         created = 0
         deduped = 0
         stored: list[EvidenceRecord] = []
+        platforms_run: list[PlatformRunSummary] = []
         limitations = [
-            "Milestone 3 uses mock/stub providers unless live clients are explicitly enabled.",
+            *limitations_prefix,
             "Do not treat mocked volumes or social posts as measured demand.",
         ]
 
-        if request.include_search:
-            for provider_name in request.providers_search:
+        if include_search:
+            for provider_name in search_providers:
                 response = self._safe_search(provider_name, request)
                 if response is None:
                     limitations.append(f"Search provider unavailable: {provider_name.value}")
+                    platforms_run.append(
+                        self._run_summary(
+                            provider_name,
+                            role="search",
+                            mode=ProviderMode.UNAVAILABLE,
+                            claim_tag=ClaimTag.UNVERIFIED_CLAIM,
+                            item_count=0,
+                            error="unknown_provider",
+                        )
+                    )
                     continue
+                item_count = 0
                 for item in response.items[: request.limit_per_provider]:
                     record = self._item_to_record(
                         kind=EvidenceKind.SEARCH,
@@ -71,42 +111,73 @@ class EvidenceCollector:
                     )
                     saved, was_created = self.store.add_evidence(record)
                     stored.append(saved)
+                    item_count += 1
                     if was_created:
                         created += 1
                     else:
                         deduped += 1
                 limitations.extend(response.limitations)
+                platforms_run.append(
+                    self._run_summary(
+                        provider_name,
+                        role="search",
+                        mode=response.mode,
+                        claim_tag=response.claim_tag,
+                        item_count=item_count,
+                        error=(response.raw or {}).get("error"),
+                    )
+                )
 
         discussion_records: list[EvidenceRecord] = []
         discussion_unavailable = False
-        if request.include_discussions:
-            for provider_name in request.providers_discussion:
+        if include_discussions:
+            for provider_name in discussion_providers:
                 response = self._safe_search(provider_name, request)
                 if response is None:
                     discussion_unavailable = True
                     limitations.append(
                         f"Discussion provider unavailable: {provider_name.value}"
                     )
+                    platforms_run.append(
+                        self._run_summary(
+                            provider_name,
+                            role="discussion",
+                            mode=ProviderMode.UNAVAILABLE,
+                            claim_tag=ClaimTag.UNVERIFIED_CLAIM,
+                            item_count=0,
+                            error="unknown_provider",
+                        )
+                    )
                     continue
                 limitations.extend(response.limitations)
                 if response.mode is ProviderMode.UNAVAILABLE:
                     discussion_unavailable = True
+                    error = (response.raw or {}).get("error") or "error"
                     limitations.append(
                         f"Discussion provider {provider_name.value} returned "
-                        f"unavailable ({(response.raw or {}).get('error') or 'error'}); "
+                        f"unavailable ({error}); "
                         "no synthetic discussion substituted."
+                    )
+                    platforms_run.append(
+                        self._run_summary(
+                            provider_name,
+                            role="discussion",
+                            mode=response.mode,
+                            claim_tag=response.claim_tag,
+                            item_count=0,
+                            error=str(error),
+                        )
                     )
                     continue
                 if (
                     response.mode is ProviderMode.MOCK
                     and provider_name is not ProviderName.MOCK
                 ):
-                    # Force-mock / stub path for a live-named provider — keep items but
-                    # mark that discussion is not live.
                     limitations.append(
                         f"Discussion provider {provider_name.value} ran in MOCK mode; "
                         "treat discussion claims as UNVERIFIED / HYPOTHESIS only."
                     )
+                item_count = 0
                 for item in response.items[: request.limit_per_provider]:
                     record = self._item_to_record(
                         kind=EvidenceKind.DISCUSSION,
@@ -118,10 +189,21 @@ class EvidenceCollector:
                     saved, was_created = self.store.add_evidence(record)
                     stored.append(saved)
                     discussion_records.append(saved)
+                    item_count += 1
                     if was_created:
                         created += 1
                     else:
                         deduped += 1
+                platforms_run.append(
+                    self._run_summary(
+                        provider_name,
+                        role="discussion",
+                        mode=response.mode,
+                        claim_tag=response.claim_tag,
+                        item_count=item_count,
+                        error=(response.raw or {}).get("error"),
+                    )
+                )
 
         pain_created = 0
         pain_updated = 0
@@ -140,14 +222,11 @@ class EvidenceCollector:
             if live_discussion:
                 source = live_discussion
             elif mock_discussion:
-                # Explicit MOCK discussion only — still extract, but callers demote cards.
                 source = mock_discussion
                 limitations.append(
                     "Pain points derived from MOCK discussion only — not live user voice."
                 )
-            elif discussion_unavailable or request.include_discussions:
-                # X (or other discussion) down with nothing stored: do not invent pains
-                # from mock, and do not scrape SERP titles into "recurring problems".
+            elif discussion_unavailable or include_discussions:
                 source = []
                 limitations.append(
                     "Live discussion unavailable; pain-point extraction skipped "
@@ -168,11 +247,8 @@ class EvidenceCollector:
 
         self.session.commit()
 
-        # Deduplicate limitation strings while preserving order.
         unique_limitations = list(dict.fromkeys(limitations))
 
-        # Return all evidence visible on this collection (new + linked duplicates).
-        # Deduped rows remain labeled via is_duplicate for transparency.
         visible = self.store.list_evidence(collection_id=collection.id, limit=500)
         by_id = {r.id: r for r in stored if r.id is not None}
         for item in visible:
@@ -190,6 +266,28 @@ class EvidenceCollector:
             evidence=visible,
             pain_points=pain_points,
             limitations=unique_limitations,
+            platforms_requested=platforms_requested,
+            platforms_run=[row.model_dump(mode="json") for row in platforms_run],
+        )
+
+    @staticmethod
+    def _run_summary(
+        provider_name: ProviderName,
+        *,
+        role: str,
+        mode: ProviderMode,
+        claim_tag: ClaimTag,
+        item_count: int,
+        error: str | None = None,
+    ) -> PlatformRunSummary:
+        return PlatformRunSummary(
+            platform=provider_to_platform(provider_name) or provider_name.value,
+            provider=provider_name,
+            role=role,
+            mode=mode,
+            claim_tag=claim_tag,
+            item_count=item_count,
+            error=error,
         )
 
     def _safe_search(

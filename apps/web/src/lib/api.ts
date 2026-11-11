@@ -79,16 +79,40 @@ export function listProviders() {
   }>("/providers");
 }
 
+export type ResearchPlatformId = "youtube" | "serp" | "trends" | "x" | "all";
+
+export type PlatformRun = {
+  platform: string;
+  provider: string;
+  role: string;
+  mode: string;
+  claim_tag: string;
+  item_count: number;
+  skipped?: boolean;
+  error?: string | null;
+  notes?: string | null;
+};
+
+export const DEFAULT_RESEARCH_PLATFORMS: Exclude<ResearchPlatformId, "all">[] = [
+  "trends",
+  "serp",
+  "youtube",
+  "x",
+];
+
 export function collectEvidence(body: {
   query: string;
   geography?: string;
   language?: string;
+  platforms?: ResearchPlatformId | ResearchPlatformId[];
 }) {
   return api<{
     collection_id: string;
     evidence_created: number;
     pain_points_created: number;
     limitations: string[];
+    platforms_requested: string[];
+    platforms_run: PlatformRun[];
   }>("/evidence/collect", { method: "POST", body: JSON.stringify(body) });
 }
 
@@ -96,6 +120,7 @@ export function discoverOpportunities(body: {
   query: string;
   geography?: string;
   language?: string;
+  platforms?: ResearchPlatformId | ResearchPlatformId[];
 }) {
   return api<{
     run_id: string;
@@ -108,6 +133,8 @@ export function discoverOpportunities(body: {
       claims: { text: string; claim_tag: string }[];
     }[];
     limitations: string[];
+    platforms_requested: string[];
+    platforms_run: PlatformRun[];
   }>("/opportunities/discover", { method: "POST", body: JSON.stringify(body) });
 }
 
@@ -144,11 +171,14 @@ export function generateReports(body: {
   query: string;
   geography?: string;
   language?: string;
+  platforms?: ResearchPlatformId | ResearchPlatformId[];
 }) {
   return api<{
     reports: OpportunityReport[];
     count: number;
     limitations: string[];
+    platforms_requested: string[];
+    platforms_run: PlatformRun[];
   }>("/reports/generate", { method: "POST", body: JSON.stringify(body) });
 }
 

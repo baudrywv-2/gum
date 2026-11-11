@@ -3,10 +3,14 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { ClaimTagBadge } from "@/components/ClaimTag";
+import { PlatformChips } from "@/components/PlatformChips";
 import { ScoreBar } from "@/components/ScoreBar";
 import {
+  DEFAULT_RESEARCH_PLATFORMS,
   generateReports,
   type OpportunityReport,
+  type PlatformRun,
+  type ResearchPlatformId,
 } from "@/lib/api";
 
 const SAVED_KEY = "gum.savedReportIds";
@@ -18,29 +22,49 @@ function saveReportId(id: string) {
   }
 }
 
+function modeClass(mode: string) {
+  if (mode === "live") return "text-emerald-300";
+  if (mode === "unavailable") return "text-amber-300";
+  return "text-zinc-400";
+}
+
 export default function DiscoverPage() {
   const [query, setQuery] = useState("freelancer invoicing calculator tool");
   const [geography, setGeography] = useState("US");
   const [language, setLanguage] = useState("en");
+  const [platforms, setPlatforms] = useState<
+    Array<Exclude<ResearchPlatformId, "all">>
+  >([...DEFAULT_RESEARCH_PLATFORMS]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reports, setReports] = useState<OpportunityReport[]>([]);
   const [limitations, setLimitations] = useState<string[]>([]);
+  const [platformsRequested, setPlatformsRequested] = useState<string[]>([]);
+  const [platformsRun, setPlatformsRun] = useState<PlatformRun[]>([]);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     setLoading(true);
     setError(null);
     try {
+      const selected =
+        platforms.length === DEFAULT_RESEARCH_PLATFORMS.length
+          ? ("all" as const)
+          : platforms;
       const result = await generateReports({
         query: query.trim(),
         geography: geography || undefined,
         language: language || undefined,
+        platforms: selected,
       });
       setReports(result.reports);
       setLimitations(result.limitations);
+      setPlatformsRequested(result.platforms_requested ?? []);
+      setPlatformsRun(result.platforms_run ?? []);
     } catch (err) {
       setReports([]);
+      setPlatformsRun([]);
+      setPlatformsRequested([]);
       setError(err instanceof Error ? err.message : "Discovery failed");
     } finally {
       setLoading(false);
@@ -56,13 +80,13 @@ export default function DiscoverPage() {
         Research a problem space
       </h2>
       <p className="mt-3 max-w-2xl text-zinc-300">
-        Runs evidence collection, discovery, gaps, formats, and scoring through
-        the shared API. Every score stays inspectable; claims stay labeled.
+        Pick one platform, a combination, or all. Runs evidence collection through
+        the shared API with labeled claims — no fabricated demand.
       </p>
 
       <form
         onSubmit={onSubmit}
-        className="mt-8 space-y-4 border-t border-white/10 pt-8"
+        className="mt-8 space-y-5 border-t border-white/10 pt-8"
       >
         <label className="block">
           <span className="text-xs uppercase tracking-wider text-zinc-500">
@@ -97,6 +121,13 @@ export default function DiscoverPage() {
             />
           </label>
         </div>
+
+        <PlatformChips
+          selected={platforms}
+          onChange={setPlatforms}
+          disabled={loading}
+        />
+
         <button
           type="submit"
           disabled={loading}
@@ -107,6 +138,45 @@ export default function DiscoverPage() {
       </form>
 
       {error && <p className="mt-6 text-amber-300">{error}</p>}
+
+      {platformsRun.length > 0 && (
+        <section className="mt-10 border-t border-white/10 pt-6">
+          <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-400">
+            Sources that ran
+          </h3>
+          {platformsRequested.length > 0 && (
+            <p className="mt-2 text-xs text-zinc-500">
+              Requested: {platformsRequested.join(", ")}
+            </p>
+          )}
+          <ul className="mt-4 space-y-3">
+            {platformsRun.map((run) => (
+              <li
+                key={`${run.platform}-${run.provider}-${run.role}`}
+                className="flex flex-wrap items-center gap-3 text-sm"
+              >
+                <span className="min-w-24 font-medium text-zinc-100">
+                  {run.platform}
+                </span>
+                <span className={`uppercase tracking-wide ${modeClass(run.mode)}`}>
+                  {run.mode}
+                </span>
+                <ClaimTagBadge tag={run.claim_tag} />
+                <span className="text-zinc-500">
+                  {run.item_count} item{run.item_count === 1 ? "" : "s"}
+                  {run.role ? ` · ${run.role}` : ""}
+                </span>
+                {run.error ? (
+                  <span className="text-amber-300/90">{run.error}</span>
+                ) : null}
+                {run.notes ? (
+                  <span className="text-zinc-500">{run.notes}</span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {reports.length > 0 && (
         <section className="mt-10 space-y-8">
@@ -207,7 +277,7 @@ export default function DiscoverPage() {
                 Limitations
               </h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-400">
-                {limitations.slice(0, 6).map((item) => (
+                {limitations.slice(0, 8).map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
