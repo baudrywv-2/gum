@@ -90,13 +90,13 @@ export default function ValidationPage() {
 
   return (
     <main>
-      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">
+      <p className="page-kicker">
         Validation
       </p>
-      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+      <h2 className="page-title">
         Cheapest experiments
       </h2>
-      <p className="mt-3 max-w-2xl text-zinc-300">
+      <p className="page-lede">
         Propose hypothesis → experiment → projected cost/time → success criteria.
         Record measured results and decide continue / pivot / abandon. Projected
         and measured stay separate — no invented wins.
@@ -104,32 +104,32 @@ export default function ValidationPage() {
 
       <form
         onSubmit={onPropose}
-        className="mt-8 flex flex-wrap gap-3 border-t border-white/10 pt-8"
+        className="section-rule flex flex-wrap gap-3"
       >
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="min-w-[16rem] flex-1 rounded-md border border-white/15 bg-black/20 px-3 py-2 text-zinc-100 outline-none focus:border-teal-400/50"
+          className="min-w-[16rem] flex-1 field-input"
           required
         />
         <button
           type="submit"
           disabled={loading}
-          className="rounded-md bg-teal-400 px-4 py-2 text-sm font-medium text-zinc-950 disabled:opacity-60"
+          className="btn-primary"
         >
           {loading ? "Proposing…" : "Propose experiments"}
         </button>
       </form>
 
-      {error && <p className="mt-4 text-amber-300">{error}</p>}
+      {error && <p className="mt-4 text-warn">{error}</p>}
 
       <ul className="mt-8 space-y-6">
         {experiments.map((exp) => (
-          <li key={exp.id} className="border-t border-white/10 pt-5">
-            <p className="text-lg text-white">{exp.query}</p>
-            <p className="mt-2 text-sm text-zinc-300">{exp.hypothesis}</p>
-            <p className="mt-2 text-sm text-zinc-400">{exp.experiment}</p>
-            <dl className="mt-3 grid gap-2 text-xs text-zinc-500 sm:grid-cols-4">
+          <li key={exp.id} className="border-t border-line pt-5">
+            <p className="text-lg font-medium text-ink">{exp.query}</p>
+            <p className="mt-2 text-sm text-muted">{exp.hypothesis}</p>
+            <p className="mt-2 text-sm text-muted">{exp.experiment}</p>
+            <dl className="mt-3 grid gap-2 text-xs text-muted sm:grid-cols-4">
               <div>
                 Projected cost: {exp.projected_cost_usd ?? "—"}
               </div>
@@ -143,7 +143,7 @@ export default function ValidationPage() {
                 Measured days: {exp.measured_time_days ?? "—"}
               </div>
             </dl>
-            <p className="mt-2 text-xs uppercase tracking-wide text-teal-300/80">
+            <p className="mt-2 text-xs uppercase tracking-wide text-signal">
               {exp.status} · {exp.decision}
             </p>
             {exp.decision === "pending" && (
@@ -153,7 +153,7 @@ export default function ValidationPage() {
                     key={decision}
                     type="button"
                     onClick={() => void recordOutcome(exp.id, decision)}
-                    className="rounded-md border border-white/15 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/5"
+                    className="btn-ghost"
                   >
                     Record {decision}
                   </button>
@@ -161,7 +161,7 @@ export default function ValidationPage() {
               </div>
             )}
             {exp.results && (
-              <p className="mt-2 text-sm text-zinc-400">Results: {exp.results}</p>
+              <p className="mt-2 text-sm text-muted">Results: {exp.results}</p>
             )}
           </li>
         ))}

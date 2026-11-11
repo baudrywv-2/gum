@@ -26,39 +26,42 @@ export default function ReportsPage() {
 
   return (
     <main>
-      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">
-        Reports
-      </p>
-      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
-        Scored opportunity reports
-      </h2>
-      <p className="mt-3 max-w-2xl text-zinc-300">
+      <p className="page-kicker">Reports</p>
+      <h2 className="page-title">Scored opportunity reports</h2>
+      <p className="page-lede">
         Ranked by overall priority. Open a report to inspect every score
         explanation and labeled claim.
       </p>
 
-      {error && <p className="mt-6 text-amber-300">{error}</p>}
+      {error && <p className="mt-6 text-warn">{error}</p>}
 
-      <ul className="mt-8 space-y-4 border-t border-white/10 pt-6">
+      <ul className="section-rule space-y-4">
         {reports.map((report) => (
-          <li key={report.id} className="flex flex-wrap items-baseline justify-between gap-3">
+          <li
+            key={report.id}
+            className="flex flex-wrap items-baseline justify-between gap-3"
+          >
             <div>
               <Link
                 href={`/reports/${report.id}`}
-                className="text-lg text-white hover:text-teal-300"
+                className="text-lg font-medium text-ink hover:text-signal"
               >
                 {report.title}
               </Link>
-              <p className="mt-1 text-sm text-zinc-400">{report.summary}</p>
+              <p className="mt-1 text-sm text-muted">{report.summary}</p>
             </div>
-            <span className="font-mono text-sm text-teal-300">
+            <span className="font-mono text-sm text-signal">
               {report.scores.overall_priority.score.toFixed(2)}
             </span>
           </li>
         ))}
         {!error && reports.length === 0 && (
-          <li className="text-zinc-400">
-            No reports yet. Run discovery to generate the first one.
+          <li className="text-muted">
+            No reports yet.{" "}
+            <Link href="/discover" className="text-signal underline-offset-2 hover:underline">
+              Run discovery
+            </Link>{" "}
+            to generate the first one.
           </li>
         )}
       </ul>

@@ -44,10 +44,8 @@ export function PlatformChips({ selected, onChange, disabled }: Props) {
 
   return (
     <fieldset disabled={disabled} className="block">
-      <legend className="text-xs uppercase tracking-wider text-zinc-500">
-        Platforms
-      </legend>
-      <p className="mt-1 text-xs text-zinc-500">
+      <legend className="field-label">Platforms</legend>
+      <p className="mt-1.5 text-xs leading-relaxed text-muted">
         Research one source, a combination, or all. Unselected providers are
         skipped — no synthetic fill-in.
       </p>
@@ -62,10 +60,10 @@ export function PlatformChips({ selected, onChange, disabled }: Props) {
               title={chip.hint}
               aria-pressed={active}
               onClick={() => toggle(chip.id)}
-              className={`rounded-full border px-3 py-1.5 text-xs tracking-wide transition ${
+              className={`rounded-lg border px-3.5 py-2 text-xs font-medium tracking-wide transition ${
                 active
-                  ? "border-teal-400/60 bg-teal-400/15 text-teal-100"
-                  : "border-white/15 bg-transparent text-zinc-400 hover:border-white/30 hover:text-zinc-200"
+                  ? "border-signal/50 bg-signal text-white shadow-soft"
+                  : "border-line-strong bg-white/55 text-ink-soft hover:border-ink/25 hover:bg-white"
               }`}
             >
               {chip.label}

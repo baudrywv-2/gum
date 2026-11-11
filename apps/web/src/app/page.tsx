@@ -36,58 +36,64 @@ export default function OverviewPage() {
 
   return (
     <main>
-      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">
-        Discovery-first workspace
-      </p>
-      <h2 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-        Start with the problem, not the product.
-      </h2>
-      <p className="mt-4 max-w-2xl text-lg text-zinc-300">
-        GUM collects evidence, surfaces gaps, compares solution formats, and
-        scores opportunities with labeled claims — never fabricated demand.
-      </p>
+      <section className="relative flex min-h-[72vh] flex-col justify-center py-6 md:min-h-[78vh] md:py-10">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-10 top-8 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(11,107,97,0.18),transparent_70%)] blur-2xl md:h-72 md:w-72"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-10 right-0 h-48 w-64 rounded-full bg-[radial-gradient(circle,rgba(42,63,57,0.12),transparent_70%)] blur-2xl"
+        />
 
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link
-          href="/discover"
-          className="rounded-md bg-teal-400 px-5 py-2.5 text-sm font-medium text-zinc-950 hover:bg-teal-300"
-        >
-          Open discovery
-        </Link>
-        <Link
-          href="/reports"
-          className="rounded-md border border-white/15 px-5 py-2.5 text-sm text-zinc-100 hover:bg-white/5"
-        >
-          View reports
-        </Link>
-      </div>
+        <p className="page-kicker anim-fade">Opportunity intelligence</p>
+        <h1 className="anim-rise mt-3 font-display text-[clamp(3.5rem,12vw,7.5rem)] font-medium leading-[0.9] tracking-tight text-ink">
+          GUM
+        </h1>
+        <h2 className="anim-rise-delay mt-6 max-w-2xl font-display text-2xl font-medium tracking-tight text-ink-soft sm:text-3xl">
+          Start with the problem, not the product.
+        </h2>
+        <p className="anim-rise-delay mt-4 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+          Collect evidence, surface gaps, compare formats, and score opportunities
+          with labeled claims — never fabricated demand.
+        </p>
 
-      <section className="mt-12 border-t border-white/10 pt-8">
-        <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-400">
+        <div className="anim-rise-delay mt-8 flex flex-wrap gap-3">
+          <Link href="/discover" className="btn-primary">
+            Open discovery
+          </Link>
+          <Link href="/reports" className="btn-secondary">
+            View reports
+          </Link>
+        </div>
+      </section>
+
+      <section className="section-rule">
+        <h3 className="text-sm font-medium uppercase tracking-[0.16em] text-muted">
           Backend status
         </h3>
         {error && (
-          <p className="mt-3 text-amber-300">
+          <p className="mt-3 text-warn">
             API unreachable at {API_BASE} ({error}). Start the FastAPI service.
           </p>
         )}
         {!error && health && (
-          <dl className="mt-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+          <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 text-sm sm:grid-cols-4">
             <div>
-              <dt className="text-zinc-500">Status</dt>
-              <dd className="mt-1 text-teal-300">{health.status}</dd>
+              <dt className="text-muted">Status</dt>
+              <dd className="mt-1 font-medium text-signal">{health.status}</dd>
             </div>
             <div>
-              <dt className="text-zinc-500">Version</dt>
-              <dd className="mt-1">{health.version}</dd>
+              <dt className="text-muted">Version</dt>
+              <dd className="mt-1 font-mono text-ink">{health.version}</dd>
             </div>
             <div>
-              <dt className="text-zinc-500">Database</dt>
-              <dd className="mt-1">{health.database}</dd>
+              <dt className="text-muted">Database</dt>
+              <dd className="mt-1 font-mono text-ink">{health.database}</dd>
             </div>
             <div>
-              <dt className="text-zinc-500">Reports</dt>
-              <dd className="mt-1">{reportCount ?? "—"}</dd>
+              <dt className="text-muted">Reports</dt>
+              <dd className="mt-1 font-mono text-ink">{reportCount ?? "—"}</dd>
             </div>
           </dl>
         )}

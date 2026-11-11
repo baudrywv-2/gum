@@ -41,39 +41,39 @@ export default function OutcomesPage() {
 
   return (
     <main>
-      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">
+      <p className="page-kicker">
         Outcomes
       </p>
-      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+      <h2 className="page-title">
         Learn from measured results
       </h2>
-      <p className="mt-3 max-w-2xl text-zinc-300">
+      <p className="page-lede">
         Continue / pivot / abandon decisions with projected vs measured cost and
         time kept distinct. No fabricated wins.
       </p>
 
-      {error && <p className="mt-6 text-amber-300">{error}</p>}
+      {error && <p className="mt-6 text-warn">{error}</p>}
 
-      <ul className="mt-8 space-y-5 border-t border-white/10 pt-6">
+      <ul className="mt-8 space-y-5 border-t border-line pt-6">
         {outcomes.map((outcome) => (
           <li key={outcome.experiment_id}>
-            <p className="text-lg text-white">{outcome.query}</p>
-            <p className="mt-1 text-sm text-zinc-400">{outcome.hypothesis}</p>
-            <p className="mt-2 text-sm text-teal-300 uppercase tracking-wide">
+            <p className="text-lg text-ink">{outcome.query}</p>
+            <p className="mt-1 text-sm text-muted">{outcome.hypothesis}</p>
+            <p className="mt-2 text-sm text-signal uppercase tracking-wide">
               {outcome.decision}
             </p>
-            <p className="mt-2 text-xs text-zinc-500">
+            <p className="mt-2 text-xs text-muted">
               Projected ${outcome.projected_cost_usd ?? "—"} /{" "}
               {outcome.projected_time_days ?? "—"}d · Measured $
               {outcome.measured_cost_usd ?? "—"} / {outcome.measured_time_days ?? "—"}d
             </p>
             {outcome.results && (
-              <p className="mt-2 text-sm text-zinc-300">{outcome.results}</p>
+              <p className="mt-2 text-sm text-muted">{outcome.results}</p>
             )}
           </li>
         ))}
         {!error && outcomes.length === 0 && (
-          <li className="text-zinc-400">
+          <li className="text-muted">
             No recorded outcomes yet. Propose an experiment on Validation and
             record a decision.
           </li>

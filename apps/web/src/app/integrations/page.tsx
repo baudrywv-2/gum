@@ -40,33 +40,33 @@ export default function IntegrationsPage() {
 
   return (
     <main>
-      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">
+      <p className="page-kicker">
         Integrations
       </p>
-      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+      <h2 className="page-title">
         Provider adapters
       </h2>
-      <p className="mt-3 max-w-2xl text-zinc-300">
+      <p className="page-lede">
         Modular, replaceable data sources. Mock by default — no paid calls unless
         credentials exist and mock force is off.
       </p>
       {forceMock !== null && (
-        <p className="mt-4 text-sm text-zinc-400">
+        <p className="mt-4 text-sm text-muted">
           Force mock:{" "}
-          <span className="text-teal-300">{forceMock ? "on" : "off"}</span>
+          <span className="text-signal">{forceMock ? "on" : "off"}</span>
         </p>
       )}
-      {error && <p className="mt-6 text-amber-300">{error}</p>}
-      <ul className="mt-8 space-y-4 border-t border-white/10 pt-6">
+      {error && <p className="mt-6 text-warn">{error}</p>}
+      <ul className="section-rule space-y-4">
         {providers.map((provider) => (
           <li key={provider.name} className="flex flex-wrap items-baseline justify-between gap-3">
             <div>
-              <p className="text-lg text-white">{provider.name}</p>
-              <p className="text-sm text-zinc-400">{provider.notes}</p>
+              <p className="text-lg text-ink">{provider.name}</p>
+              <p className="text-sm text-muted">{provider.notes}</p>
             </div>
             <div className="text-right text-sm">
-              <p className="text-teal-300">{provider.mode}</p>
-              <p className="text-zinc-500">
+              <p className="text-signal">{provider.mode}</p>
+              <p className="text-muted">
                 {provider.configured ? "configured" : "not configured"}
               </p>
             </div>

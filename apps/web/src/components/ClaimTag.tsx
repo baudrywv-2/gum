@@ -1,16 +1,16 @@
 const STYLES: Record<string, string> = {
-  MEASURED_FACT: "text-emerald-300 border-emerald-400/30",
-  PROVIDER_ESTIMATE: "text-sky-300 border-sky-400/30",
-  AI_INTERPRETATION: "text-amber-200 border-amber-400/30",
-  HYPOTHESIS: "text-teal-200 border-teal-400/30",
-  UNVERIFIED_CLAIM: "text-zinc-300 border-zinc-500/40",
+  MEASURED_FACT: "text-emerald-800 border-emerald-700/25 bg-emerald-50/80",
+  PROVIDER_ESTIMATE: "text-sky-900 border-sky-700/25 bg-sky-50/80",
+  AI_INTERPRETATION: "text-amber-900 border-amber-700/25 bg-amber-50/80",
+  HYPOTHESIS: "text-teal-900 border-teal-700/25 bg-teal-50/70",
+  UNVERIFIED_CLAIM: "text-ink-soft border-line-strong bg-white/70",
 };
 
 export function ClaimTagBadge({ tag }: { tag: string }) {
   return (
     <span
-      className={`inline-flex rounded border px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${
-        STYLES[tag] ?? "text-zinc-300 border-zinc-500/40"
+      className={`claim-badge ${
+        STYLES[tag] ?? "text-ink-soft border-line-strong bg-white/70"
       }`}
     >
       {tag.replaceAll("_", " ")}
