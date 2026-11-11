@@ -56,34 +56,26 @@ export function IntelligencePanel({
 
   return (
     <main>
-      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">
-        Intelligence
-      </p>
-      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
-        {title}
-      </h2>
-      <p className="mt-3 max-w-2xl text-zinc-300">{blurb}</p>
-      <p className="mt-2 text-sm text-zinc-500">{providerHint}</p>
+      <p className="page-kicker">Intelligence</p>
+      <h2 className="page-title">{title}</h2>
+      <p className="page-lede">{blurb}</p>
+      <p className="mt-2 text-sm text-muted">{providerHint}</p>
 
-      <form onSubmit={onSubmit} className="mt-8 flex flex-wrap gap-3 border-t border-white/10 pt-8">
+      <form onSubmit={onSubmit} className="section-rule flex flex-wrap gap-3">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="min-w-[16rem] flex-1 rounded-md border border-white/15 bg-black/20 px-3 py-2 text-zinc-100 outline-none focus:border-teal-400/50"
+          className="field-input min-w-[16rem] flex-1"
           required
         />
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-md bg-teal-400 px-4 py-2 text-sm font-medium text-zinc-950 disabled:opacity-60"
-        >
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? "Loading…" : "Query provider"}
         </button>
       </form>
 
-      {error && <p className="mt-4 text-amber-300">{error}</p>}
+      {error && <p className="mt-4 text-warn">{error}</p>}
       {payload && (
-        <pre className="mt-6 max-h-[32rem] overflow-auto rounded-md border border-white/10 bg-black/30 p-4 text-xs text-zinc-300">
+        <pre className="mt-6 max-h-[32rem] overflow-auto rounded-xl border border-line bg-white/75 p-4 font-mono text-xs text-ink-soft shadow-soft">
           {payload}
         </pre>
       )}

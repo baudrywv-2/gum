@@ -9,6 +9,7 @@ const SAVED_KEY = "gum.savedReportIds";
 export default function SavedPage() {
   const [reports, setReports] = useState<OpportunityReport[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,10 +27,12 @@ export default function SavedPage() {
         );
         if (!cancelled) {
           setReports(loaded.filter((r): r is OpportunityReport => r !== null));
+          setReady(true);
         }
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : "Failed to load saved");
+          setReady(true);
         }
       }
     }
@@ -41,36 +44,57 @@ export default function SavedPage() {
 
   return (
     <main>
-      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">Saved</p>
-      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
-        Saved opportunities
-      </h2>
-      <p className="mt-3 max-w-2xl text-zinc-300">
+      <p className="page-kicker">Saved</p>
+      <h2 className="page-title">Saved opportunities</h2>
+      <p className="page-lede">
         Local bookmarks of scored reports. Server-side workspace saves land with
         auth later; until then IDs stay in this browser.
       </p>
-      {error && <p className="mt-6 text-amber-300">{error}</p>}
-      <ul className="mt-8 space-y-3 border-t border-white/10 pt-6">
-        {reports.map((report) => (
-          <li key={report.id}>
-            <Link
-              href={`/reports/${report.id}`}
-              className="text-lg text-white hover:text-teal-300"
-            >
-              {report.title}
-            </Link>
-            <p className="text-sm text-zinc-400">
-              Priority {report.scores.overall_priority.score.toFixed(2)} ·{" "}
-              {report.recommended_format ?? "no format"}
+
+      {error && <p className="mt-6 text-warn">{error}</p>}
+
+      {ready && reports.length === 0 && !error && (
+        <div className="section-rule">
+          <div className="max-w-lg rounded-2xl border border-line bg-white/70 p-8 shadow-soft">
+            <p className="font-display text-2xl font-medium text-ink">
+              Nothing saved yet
             </p>
-          </li>
-        ))}
-        {reports.length === 0 && (
-          <li className="text-zinc-400">
-            Nothing saved yet. Use Save on a discovery result.
-          </li>
-        )}
-      </ul>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              Run Discovery, open a ranked report, then hit Save. Bookmarks stay
+              on this device until workspace sync ships.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/discover" className="btn-primary">
+                Research a problem
+              </Link>
+              <Link href="/reports" className="btn-secondary">
+                Browse reports
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {reports.length > 0 && (
+        <ul className="section-rule space-y-4">
+          {reports.map((report) => (
+            <li key={report.id}>
+              <Link
+                href={`/reports/${report.id}`}
+                className="group block rounded-xl border border-transparent px-1 py-2 transition hover:border-line hover:bg-white/60"
+              >
+                <span className="text-lg font-medium text-ink group-hover:text-signal">
+                  {report.title}
+                </span>
+                <p className="mt-1 text-sm text-muted">
+                  Priority {report.scores.overall_priority.score.toFixed(2)} ·{" "}
+                  {report.recommended_format ?? "no format"}
+                </p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }

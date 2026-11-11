@@ -3,20 +3,242 @@
 @tailwind utilities;
 
 :root {
-  --background: #0b0f14;
-  --foreground: #f4f4f5;
-  --accent: #2dd4bf;
-  --panel: rgba(255, 255, 255, 0.04);
-  --line: rgba(255, 255, 255, 0.1);
+  --ink: #10211d;
+  --ink-soft: #2a3f39;
+  --paper: #eef3f0;
+  --paper-deep: #dde7e1;
+  --mist: #c9d8d0;
+  --signal: #0b6b61;
+  --signal-soft: #128578;
+  --line: rgba(16, 33, 29, 0.12);
+  --line-strong: rgba(16, 33, 29, 0.22);
+  --muted: #5a6e66;
+  --warn: #8a5a12;
+  --surface: rgba(255, 255, 255, 0.62);
+  --surface-strong: rgba(255, 255, 255, 0.82);
+  --shadow-soft: 0 18px 50px rgba(16, 33, 29, 0.08);
+  --background: var(--paper);
+  --foreground: var(--ink);
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-geist-sans), ui-sans-serif, sans-serif;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: var(--font-sora), ui-sans-serif, sans-serif;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--signal) 28%, white);
+    color: var(--ink);
+  }
+}
+
+@layer components {
+  .gum-atmosphere {
+    background:
+      radial-gradient(ellipse 90% 55% at 8% -10%, rgba(18, 133, 120, 0.16), transparent 55%),
+      radial-gradient(ellipse 70% 45% at 92% 8%, rgba(61, 90, 80, 0.12), transparent 50%),
+      linear-gradient(165deg, #f5f8f6 0%, var(--paper) 42%, #e7efe9 100%);
+  }
+
+  .gum-atmosphere::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.35;
+    background-image:
+      linear-gradient(rgba(16, 33, 29, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 33, 29, 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 20%, black, transparent 75%);
+  }
+
+  .gum-shell {
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-kicker {
+    @apply text-[11px] font-medium uppercase tracking-[0.22em] text-[var(--signal)];
+  }
+
+  .page-title {
+    font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+    @apply mt-2 text-3xl font-medium tracking-tight text-[var(--ink)] sm:text-4xl;
+  }
+
+  .page-lede {
+    @apply mt-3 max-w-2xl text-[15px] leading-relaxed text-[var(--muted)] sm:text-base;
+  }
+
+  .section-rule {
+    @apply mt-8 border-t border-[var(--line)] pt-8;
+  }
+
+  .field-label {
+    @apply text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--muted)];
+  }
+
+  .field-input {
+    margin-top: 0.375rem;
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--line-strong);
+    background: var(--surface-strong);
+    padding: 0.625rem 0.875rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .field-input::placeholder {
+    color: color-mix(in srgb, var(--muted) 60%, transparent);
+  }
+
+  .field-input:focus {
+    border-color: var(--signal);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 20%, transparent);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background: var(--signal);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    transition: background 160ms ease, transform 160ms ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--signal-soft);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+  }
+
+  .btn-primary:disabled:hover {
+    transform: none;
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink);
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+
+  .btn-secondary:hover {
+    border-color: color-mix(in srgb, var(--ink) 30%, transparent);
+    background: #fff;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: 1px solid var(--line);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--line-strong);
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .claim-badge {
+    @apply inline-flex rounded-md border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide;
+  }
+
+  .anim-rise {
+    animation: gum-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .anim-rise-delay {
+    animation: gum-rise 800ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+  }
+
+  .anim-fade {
+    animation: gum-fade 900ms ease both;
+  }
+
+  .ambient-shift {
+    animation: gum-ambient 18s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes gum-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gum-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes gum-ambient {
+  from {
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  to {
+    filter: hue-rotate(8deg) saturate(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-rise,
+  .anim-rise-delay,
+  .anim-fade,
+  .ambient-shift {
+    animation: none !important;
+  }
+
+  .btn-primary:hover {
+    transform: none;
+  }
 }
 
 code,
 .font-mono {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
 }

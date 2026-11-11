@@ -28,10 +28,10 @@ export default function ReportDetailPage() {
   }, [params.id]);
 
   if (error) {
-    return <main className="text-amber-300">{error}</main>;
+    return <main className="text-warn">{error}</main>;
   }
   if (!report) {
-    return <main className="text-zinc-400">Loading report…</main>;
+    return <main className="text-muted">Loading report…</main>;
   }
 
   const scores = [
@@ -45,33 +45,29 @@ export default function ReportDetailPage() {
 
   return (
     <main>
-      <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">
-        Opportunity report
-      </p>
-      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
-        {report.title}
-      </h2>
-      <p className="mt-3 max-w-3xl text-zinc-300">{report.summary}</p>
+      <p className="page-kicker">Opportunity report</p>
+      <h2 className="page-title">{report.title}</h2>
+      <p className="page-lede">{report.summary}</p>
 
-      <dl className="mt-8 grid gap-4 border-t border-white/10 pt-6 text-sm sm:grid-cols-3">
+      <dl className="section-rule grid gap-4 text-sm sm:grid-cols-3">
         <div>
-          <dt className="text-zinc-500">Problem</dt>
-          <dd className="mt-1 text-zinc-200">{report.problem}</dd>
+          <dt className="text-muted">Problem</dt>
+          <dd className="mt-1 text-ink-soft">{report.problem}</dd>
         </div>
         <div>
-          <dt className="text-zinc-500">Audience</dt>
-          <dd className="mt-1 text-zinc-200">{report.audience ?? "—"}</dd>
+          <dt className="text-muted">Audience</dt>
+          <dd className="mt-1 text-ink-soft">{report.audience ?? "—"}</dd>
         </div>
         <div>
-          <dt className="text-zinc-500">Format</dt>
-          <dd className="mt-1 text-zinc-200">
+          <dt className="text-muted">Format</dt>
+          <dd className="mt-1 text-ink-soft">
             {report.recommended_format ?? "—"}
           </dd>
         </div>
       </dl>
 
       <section className="mt-10 space-y-5">
-        <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-400">
+        <h3 className="text-sm font-medium uppercase tracking-[0.16em] text-muted">
           Scores
         </h3>
         {scores.map(([label, block]) => (
@@ -84,42 +80,42 @@ export default function ReportDetailPage() {
         ))}
       </section>
 
-      <section className="mt-10 border-t border-white/10 pt-6">
-        <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-400">
+      <section className="section-rule">
+        <h3 className="text-sm font-medium uppercase tracking-[0.16em] text-muted">
           Unmet needs
         </h3>
         <ul className="mt-3 space-y-2">
           {report.unmet_needs.map((need) => (
             <li key={need.text} className="flex flex-wrap items-center gap-2 text-sm">
               <ClaimTagBadge tag={need.claim_tag} />
-              <span className="text-zinc-300">{need.text}</span>
+              <span className="text-ink-soft">{need.text}</span>
             </li>
           ))}
           {report.unmet_needs.length === 0 && (
-            <li className="text-zinc-500">None extracted.</li>
+            <li className="text-muted">None extracted.</li>
           )}
         </ul>
       </section>
 
-      <section className="mt-10 border-t border-white/10 pt-6">
-        <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-400">
+      <section className="section-rule">
+        <h3 className="text-sm font-medium uppercase tracking-[0.16em] text-muted">
           Next actions
         </h3>
-        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-300">
+        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-soft">
           {report.next_actions.map((action) => (
             <li key={action}>{action}</li>
           ))}
         </ul>
-        <p className="mt-4 text-sm text-zinc-400">
+        <p className="mt-4 text-sm text-muted">
           Cheapest validation: {report.cheapest_validation_experiment ?? "—"}
         </p>
       </section>
 
-      <section className="mt-10 border-t border-white/10 pt-6">
-        <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-400">
+      <section className="section-rule">
+        <h3 className="text-sm font-medium uppercase tracking-[0.16em] text-muted">
           Missing info & limitations
         </h3>
-        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-500">
+        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-muted">
           {[...report.missing_info, ...report.limitations].slice(0, 10).map((item) => (
             <li key={item}>{item}</li>
           ))}
