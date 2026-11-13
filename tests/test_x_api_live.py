@@ -61,6 +61,7 @@ def test_live_search_maps_posts_with_measured_fact() -> None:
                         "retweet_count": 1,
                         "reply_count": 0,
                         "quote_count": 0,
+                        "bookmark_count": 2,
                     },
                 }
             ],
@@ -87,6 +88,14 @@ def test_live_search_maps_posts_with_measured_fact() -> None:
     assert item.claim_tag.value == "MEASURED_FACT"
     assert item.attributes.get("mocked") is False
     assert item.attributes.get("author") == "@acct"
+    assert item.attributes.get("engagement") == {
+        "likes": 3,
+        "reposts": 1,
+        "replies": 0,
+        "quotes": 0,
+        "bookmarks": 2,
+    }
+    assert item.attributes.get("public_metrics", {}).get("bookmark_count") == 2
     assert item.url and item.url.endswith("/111")
     assert result.raw.get("result_count") == 1
     assert result.raw.get("mocked") is False
