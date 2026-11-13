@@ -74,7 +74,13 @@ class XApiProvider(Provider):
                 claim_tag=ClaimTag.UNVERIFIED_CLAIM,
                 attributes={
                     "author": "@mock_user",
-                    "engagement": {"likes": 0, "reposts": 0},
+                    "engagement": {
+                        "likes": 0,
+                        "reposts": 0,
+                        "replies": 0,
+                        "quotes": 0,
+                        "bookmarks": 0,
+                    },
                     "mocked": True,
                 },
             ),
@@ -88,7 +94,13 @@ class XApiProvider(Provider):
                 claim_tag=ClaimTag.UNVERIFIED_CLAIM,
                 attributes={
                     "author": "@mock_user_2",
-                    "engagement": {"likes": 0, "reposts": 0},
+                    "engagement": {
+                        "likes": 0,
+                        "reposts": 0,
+                        "replies": 0,
+                        "quotes": 0,
+                        "bookmarks": 0,
+                    },
                     "mocked": True,
                     "mentioned_competitor": "InvoiceBot",
                 },
@@ -218,11 +230,15 @@ class XApiProvider(Provider):
                         "created_at": tweet.get("created_at"),
                         "lang": tweet.get("lang"),
                         "engagement": {
+                            # X public_metrics on the post object. Keys missing
+                            # from the API payload stay null (do not invent).
                             "likes": metrics.get("like_count"),
                             "reposts": metrics.get("retweet_count"),
                             "replies": metrics.get("reply_count"),
                             "quotes": metrics.get("quote_count"),
+                            "bookmarks": metrics.get("bookmark_count"),
                         },
+                        "public_metrics": metrics,
                         "mocked": False,
                         "claim_note": (
                             "MEASURED_FACT = post returned by X recent-search; "
